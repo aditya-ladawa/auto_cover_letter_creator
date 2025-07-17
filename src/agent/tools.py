@@ -1,148 +1,175 @@
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
+from reportlab.lib.units import mm
 import os
 import re
-from fpdf import FPDF
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, Field
 from langchain_core.tools import tool
+from pydantic import BaseModel
+
+from deep_translator import GoogleTranslator
+from copy import deepcopy
+
+
 
 class CoverLetterInput(BaseModel):
-    company_name: str = Field(description="Name of the company")
-    job_post: str = Field(description="Role or job post title")
-    address: Optional[str] = Field(default=None, description="Company address")
-    city_state_country: Optional[str] = Field(default=None, description="City, state, and country of company")
-    subject: str = Field(description="Subject line of the cover letter")
-    salutation: str = Field(description="Salutation (e.g., Dear Hiring Manager)")
-    body: str = Field(description="Body text of the cover letter with optional **bold** and [link](url) formatting")
-
-def sanitize_name(name: str) -> str:
-    return re.sub(r'[^a-z0-9]+', '_', name.lower()).strip('_')
-
-class PDFWithLinks(FPDF):
-    def __init__(self):
-        super().__init__()
-        self.set_auto_page_break(auto=False)
-        self.add_font("Calibri", "", "Calibri/calibri.ttf", uni=True)
-        self.add_font("Calibri", "B", "Calibri/calibri_bold.ttf", uni=True)
-        self.set_font("Calibri", size=11)
-        self.set_margins(15, 15, 15)
-        self.add_page()
-        self.max_height = self.h - self.b_margin
-
-    def write_inline_text(self, text):
-        self.set_text_color(0, 0, 0)
-        self.set_font("Calibri", "", 11)
-        self.multi_cell(0, 6, text)
-
-    def write_styled_paragraph(self, paragraph):
-        words = re.split(r'(\*\*.+?\*\*|\[.+?\]\(.+?\))', paragraph)
-        for word in words:
-            if word.startswith("**") and word.endswith("**"):
-                text = word[2:-2]
-                self.set_font("Calibri", "B", 11)
-                self.set_text_color(0, 0, 0)
-                self.write(self.font_size_pt / 2 + 1, text)
-            elif word.startswith("[") and "](" in word and word.endswith(")"):
-                label = re.search(r"\[(.*?)\]", word).group(1)
-                link = re.search(r"\((.*?)\)", word).group(1)
-                self.set_font("Calibri", "", 11)
-                self.set_text_color(0, 0, 255)
-                self.write(self.font_size_pt / 2 + 1, label, link)
-            else:
-                self.set_font("Calibri", "", 11)
-                self.set_text_color(0, 0, 0)
-                self.write(self.font_size_pt / 2 + 1, word)
-        self.ln(8)
+    company_name: str
+    job_post: str
+    address: str | None = None
+    subject: str
+    intro_paragraph: str
+    bullet_sections: list[str]
+    closing_paragraph: str
+    sign_off: str = "Regards,"
+    sender_name: str = "Aditya Ghanashyam Ladawa"
+    location: str = "Braunschweig, Germany"
+    phone: str = "+49 15510 030840"
+    email: str = "adityaladawa12@gmail.com"
+    github_url: str = "https://github.com/aditya-ladawa"
+    linkedin_url: str = "https://www.linkedin.com/in/aditya-ladawa/"
 
 
-@tool("create_cover_letter", args_schema=CoverLetterInput, return_direct=True)
-def create_cover_letter(
-    company_name: str,
-    job_post: str,
-    address: Optional[str] = None,
-    city_state_country: Optional[str] = None,
-    subject: str = "",
-    salutation: str = "",
-    body: str = "",
-) -> str:
+def translate_cover_letter_input_to_german(data: CoverLetterInput) -> CoverLetterInput:
+    translator = GoogleTranslator(source='auto', target='de')
+    
+    # Create a deep copy to avoid mutating original
+    german_data = deepcopy(data)
+
+    # Translate scalar text fields
+    german_data.subject = translator.translate(data.subject)
+    german_data.intro_paragraph = translator.translate(data.intro_paragraph)
+    german_data.closing_paragraph = translator.translate(data.closing_paragraph)
+    german_data.company_name = translator.translate(data.company_name) if data.company_name else None
+    german_data.job_post = translator.translate(data.job_post)
+
+    # Translate address line-by-line
+    if data.address:
+        german_data.address = "\n".join([
+            translator.translate(line.strip()) for line in data.address.strip().splitlines()
+        ])
+
+    # Translate bullet points
+    german_data.bullet_points = translator.translate_batch(data.bullet_points)
+
+    return german_data
+
+
+def sanitize_filename(name: str, max_length: int = 30) -> str:
+    sanitized = re.sub(r'[^a-zA-Z0-9_\-]', '_', name.strip())
+    return sanitized[:30]
+
+
+
+def create_cover_letter_pdf(data: CoverLetterInput, lang: str = "en") -> str:
+    base_dir = "src/agent/COVER_LETTERS"
+    company_dir = sanitize_filename(data.company_name)
+    job_file = sanitize_filename(data.job_post)
+    if lang == "de":
+        job_file += "_de"
+    full_dir = os.path.join(base_dir, company_dir)
+    os.makedirs(full_dir, exist_ok=True)
+    file_path = os.path.join(full_dir, f"{job_file}.pdf")
+
+    if lang == "de":
+        translator = GoogleTranslator(source='auto', target='de')
+        data = deepcopy(data)
+        data.subject = translator.translate(data.subject)
+        data.intro_paragraph = translator.translate(data.intro_paragraph)
+        data.closing_paragraph = translator.translate(data.closing_paragraph)
+        data.company_name = translator.translate(data.company_name) if data.company_name else None
+        data.job_post = translator.translate(data.job_post)
+        if data.address:
+            data.address = "\n".join(translator.translate(line.strip()) for line in data.address.strip().splitlines())
+        data.bullet_sections = translator.translate_batch(data.bullet_sections)
+
+    margin_mm = 1.5 * 25.4
+    doc = SimpleDocTemplate(
+        file_path,
+        pagesize=A4,
+        rightMargin=margin_mm,
+        leftMargin=margin_mm,
+        topMargin=margin_mm,
+        bottomMargin=margin_mm,
+    )
+
+    styles = getSampleStyleSheet()
+    if "CustomTitle" not in styles:
+        styles.add(ParagraphStyle(name="CustomTitle", fontSize=16, leading=22, alignment=TA_CENTER, spaceAfter=12, fontName="Helvetica-Bold"))
+    if "CustomHeader" not in styles:
+        styles.add(ParagraphStyle(name="CustomHeader", fontSize=12, leading=14, alignment=TA_CENTER, spaceAfter=6, fontName="Helvetica-Bold"))
+    if "CustomNormal" not in styles:
+        styles.add(ParagraphStyle(name="CustomNormal", fontSize=11, leading=14, alignment=TA_LEFT, spaceAfter=6, fontName="Helvetica"))
+    if "ContactLine" not in styles:
+        styles.add(ParagraphStyle(name="ContactLine", fontSize=11, leading=14, alignment=TA_CENTER, spaceAfter=2, fontName="Helvetica", textColor="black"))
+    if "ContactLinks" not in styles:
+        styles.add(ParagraphStyle(name="ContactLinks", fontSize=11, leading=14, alignment=TA_CENTER, spaceAfter=12, fontName="Helvetica", textColor="blue", underline=True))
+    if "CompanyNameLeft" not in styles:
+        styles.add(ParagraphStyle(name="CompanyNameLeft", fontSize=12, leading=14, alignment=TA_LEFT, spaceAfter=6, fontName="Helvetica-Bold"))
+
+    elements = []
+    # elements.append(Paragraph("COVER LETTER" if lang == "en" else "BEWERBUNGSSCHREIBEN", styles["CustomTitle"]))
+    elements.append(Paragraph(data.sender_name, styles["CustomHeader"]))
+    elements.append(Paragraph(f"Braunschweig, Germany | +49 15510 030840", styles["ContactLine"]))
+
+    links_html = (
+        f'<a href="mailto:{data.email}">{data.email}</a> | '
+        f'<a href="{data.github_url}">GitHub</a> | '
+        f'<a href="{data.linkedin_url}">LinkedIn</a>'
+    )
+    elements.append(Paragraph(links_html, styles["ContactLinks"]))
+    elements.append(Spacer(1, 6))
+    elements.append(Paragraph(datetime.now().strftime("%d. %B %Y"), styles["CustomNormal"]))
+
+    if data.company_name:
+        elements.append(Paragraph(data.company_name, styles["CompanyNameLeft"]))
+
+    if data.address:
+        for line in data.address.split("\n"):
+            elements.append(Paragraph(line.strip(), styles["CustomNormal"]))
+    elements.append(Spacer(1, 12))
+
+    elements.append(Paragraph(data.subject, styles["CustomHeader"]))
+    elements.append(Spacer(1, 8))
+    elements.append(Paragraph(data.intro_paragraph, styles["CustomNormal"]))
+    elements.append(Spacer(1, 8))
+
+    bullet_items = [ListItem(Paragraph(bullet, styles["CustomNormal"])) for bullet in data.bullet_sections]
+    elements.append(ListFlowable(bullet_items, bulletType="bullet"))
+    elements.append(Spacer(1, 8))
+
+    elements.append(Paragraph(data.closing_paragraph, styles["CustomNormal"]))
+    elements.append(Spacer(1, 20))
+    elements.append(Paragraph("Warm regards," if lang == "en" else "Mit freundlichen Grüßen,", styles["CustomNormal"]))
+    elements.append(Spacer(1, 4))
+    elements.append(Paragraph(data.sender_name, styles["CustomNormal"]))
+
+    doc.build(elements)
+    return file_path
+
+
+    
+@tool("cover-letter-pdf-generator", args_schema=CoverLetterInput, return_direct=True)
+def generate_cover_letter_pdf_file(**kwargs) -> str:
     """
-    Generate a cover letter PDF with styled text and hyperlinks, limited to one page.
-    Saves to src/agent/COVER_LETTERS/{company}/{company}_{job_post}_cover_letter.pdf
+    Generate professional cover letter PDFs (English and German) based on input data.
+    Saves the PDFs under src/agent/COVER_LETTERS/<sanitized_company>/<sanitized_job>.pdf.
+    Returns the path to the English version.
     """
-    sanitized_company = sanitize_name(company_name)
-    sanitized_post = sanitize_name(job_post)
-    dir_path = os.path.join("src", "agent", "COVER_LETTERS", sanitized_name)
+    data = CoverLetterInput(**kwargs)
+    en_path = create_cover_letter_pdf(data, lang="en")
+    _ = create_cover_letter_pdf(data, lang="de")
+    return en_path
 
-    os.makedirs(dir_path, exist_ok=True)
-    pdf_path = os.path.join(dir_path, f"{sanitized_company}_{sanitized_post}_cover_letter.pdf")
 
-    pdf = PDFWithLinks()
-
-    # Header
-    header_lines = [
-        "Aditya Ladawa Braunschweig, Germany | ",
-        "adityaladawa12@gmail.com",
-        " | +49 15510 030840 | ",
-        "GitHub",
-        " | ",
-        "LinkedIn"
-    ]
-    links = {
-        "adityaladawa12@gmail.com": "mailto:adityaladawa12@gmail.com",
-        "GitHub": "https://github.com/aditya-ladawa",
-        "LinkedIn": "https://www.linkedin.com/in/aditya-ladawa/"
-    }
-
-    pdf.set_text_color(0, 0, 0)
-    pdf.set_font("Calibri", "", 11)
-
-    for item in header_lines:
-        if item in links:
-            pdf.set_text_color(0, 0, 255)
-            pdf.set_font("Calibri", "", 11)
-            pdf.cell(pdf.get_string_width(item), 6, item, ln=0, link=links[item])
-        else:
-            pdf.set_text_color(0, 0, 0)
-            pdf.set_font("Calibri", "", 11)
-            pdf.cell(pdf.get_string_width(item), 6, item, ln=0)
-    pdf.ln(10)
-
-    # Date
-    pdf.set_text_color(0, 0, 0)
-    date_str = datetime.now().strftime("%d. %B %Y")
-    pdf.cell(0, 6, date_str, ln=True)
-    pdf.ln(5)
-
-    # Company Info
-    pdf.cell(0, 6, company_name, ln=True)
-    if address:
-        pdf.cell(0, 6, address, ln=True)
-    if city_state_country:
-        pdf.cell(0, 6, city_state_country, ln=True)
-    pdf.ln(4)
-
-    # Subject
-    if subject:
-        pdf.set_font("Calibri", "B", 11)
-        pdf.cell(0, 6, subject, ln=True)
-        pdf.set_font("Calibri", "", 11)
-        pdf.ln(6)
-
-    # Salutation
-    if salutation:
-        pdf.cell(0, 6, salutation + ",", ln=True)
-        pdf.ln(4)
-
-    # Body
-    for paragraph in body.strip().split("\n\n"):
-        if pdf.get_y() > pdf.max_height - 15:
-            break
-        pdf.write_styled_paragraph(paragraph.strip())
-
-    # Signature
-    pdf.ln(4)
-    pdf.cell(0, 6, "Sincerely,", ln=True)
-    pdf.cell(0, 6, "Aditya Ladawa", ln=True)
-
-    pdf.output(pdf_path)
-    return pdf_path
+@tool("edit_cover-letter-pdf-generator", args_schema=CoverLetterInput, return_direct=True)
+def edit_cover_letter_pdf_file(**kwargs) -> str:
+    """
+    Edit or overwrite existing cover letter PDFs (English and German) by regenerating them with new input.
+    Returns the path to the updated English PDF file.
+    """
+    data = CoverLetterInput(**kwargs)
+    en_path = create_cover_letter_pdf(data, lang="en")
+    _ = create_cover_letter_pdf(data, lang="de")
+    return en_path

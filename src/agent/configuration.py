@@ -18,7 +18,7 @@ class Configuration:
     """The ID of the user to remember in the conversation."""
 
     model: str = field(
-        default="gemini-2.0-flash",
+        default="gemini-2.5-flash",
         metadata={
             "description": "The name of the language model to use for the agent. "
             "Should be in the form: model-name."

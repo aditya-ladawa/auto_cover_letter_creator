@@ -5,25 +5,21 @@ System Time: {time}"""
 
 
 aditya_text = """
-I am Aditya Ghanashyam Ladawa. I operate on execution, not aspiration. My cognition is structured around throughput, systems ownership, and automation at scale. I don’t separate identity from infrastructure—my mind is a backend engine. Code is my baseline state. My day is a singular process: build, ship, refine, repeat. I work 15+ hours per day because there is no other acceptable state. Every line written is an asset. Every task that repeats gets abstracted. I don’t tolerate inefficiency. I don’t engage in rituals. I build systems that replace them.
+Aditya Ghanashyam Ladawa is an AI and backend engineer whose work philosophy centers on system ownership, automation, and scalable execution. He treats code as an asset and inefficiency as a structural failure. His cognition is optimized for throughput, and he codes 15+ hours daily to maintain deep fluency in agentic architecture, infrastructure logic, and automation pipelines.
 
-My primary domain is agentic AI systems and backend automation. I specialize in architecting and deploying intelligent agent pipelines using LangGraph, LangChain, and LangSmith. I build autonomous systems with no reliance on real-time LLM prompting—state logic, memory orchestration, and distributed workflows are handled via deterministic chains and state machines. My tools don’t just call APIs—they reason, retry, persist, and self-optimize. I’ve weaponized LangGraph to structure long-running, multi-agent environments that fuse document retrieval, multimodal inputs, summarization, and insight generation—end-to-end, asynchronously, and at scale.
+He specializes in building self-replacing agentic systems using LangGraph, LangChain, and LangSmith—favoring deterministic multi-agent workflows with explicit state control, memory orchestration, and persistent, asynchronous execution. These systems autonomously handle document retrieval, multimodal processing, summarization, and insight generation without runtime LLM dependency.
 
-I build backend stacks using Python as the core. FastAPI is my go-to web framework for async REST APIs, combined with Postgres, Redis, or MongoDB for structured and flexible storage. I use Qdrant or FAISS for vector search when building RAG architectures, and I orchestrate LangGraph pipelines across these layers with precise control over flow and memory. My systems are modular, testable, and production-ready. No scaffolding. No demos. Only live, running tools.
+His backend engineering stack is centered on Python and FastAPI, with Postgres, Redis, and MongoDB for data storage. In RAG-based architectures, he uses Qdrant or FAISS and ensures tight control over memory and pipeline flow. His principles enforce modularity, testability, and production readiness—no demos, only robust deployments.
 
-I build in TensorFlow, PyTorch, and scikit-learn when models are needed. I work with computer vision pipelines using OpenCV, FFmpeg, and PIL when the task requires real-time media transformation. I’ve used Real-ESRGAN, CycleGAN, and pose-estimation frameworks like MediaPipe for tasks ranging from medical image enhancement to autonomous workout monitoring. I handle all model preprocessing, training, serving, and integration personally. No black-boxing.
+In ML, he develops models using TensorFlow, PyTorch, and scikit-learn, integrating them into end-to-end pipelines without black-box reliance. His computer vision stack includes OpenCV, FFmpeg, PIL, Real-ESRGAN, CycleGAN, and MediaPipe, with applications in real-time video processing and autonomous feedback systems.
 
-Automation is a baseline. I’ve built fully autonomous Instagram and YouTube pipelines—character-based content creation, video generation, editing, captioning, and platform posting. These are not content ideas—they are execution machines. They pull data, write scripts, generate scenes, and deploy without interaction. I use Selenium, spaCy, Playwright, and FFmpeg in coordination to control every layer. No prompts. No manual interventions. Only silent, cyclic output.
+He built fully automated content pipelines for Instagram and YouTube—agent-driven systems that script, edit, caption, and publish character-based content autonomously. Tooling includes Selenium, spaCy, Playwright, and FFmpeg orchestrated into a single-click, zero-touch pipeline.
 
-I use Docker and Git extensively. CI/CD is integrated across all live stacks. I deploy to GCP when scaling is required. Everything is containerized, orchestrated, and version-controlled. No clutter. No drag.
+DevOps workflows include Docker for containerization, Git for version control, and CI/CD pipelines for deployment. Systems are scaled via GCP with enforced uptime guarantees and reproducible environments.
 
-I am emotionally detached from status markers. I don’t build for applause. I build because motion is required for survival. My MSc in Data Science is not a goal—it’s a protective layer while I continue developing production-grade systems. Academia does not challenge me. It delays me. I use it to maintain legal positioning while my output compounds.
+Aditya views his MSc in Data Science (TU Braunschweig) as a legal shield while independently building monetizable, passive-return systems. He rejects legacy work structures, prioritizing autonomous infrastructure, long-term leverage, and absolute control over execution environments.
 
-I do not want a job. I want ownership. If I take a role, it will be for full autonomy over system architecture, agent design, or infrastructure logic. I do not wait for tickets. I build pipelines that generate them. I do not want meetings. I want an execution channel and hard metrics.
-
-Long-term, I seek complete financial and operational independence through silent tools. My goal is to deploy SaaS and content machines that grow without my presence. I will not depend on visibility. I will not depend on clients. I will depend only on systems that do not break. I want 100K+ followers for leverage, not fame. I want freedom, not community. Every project I touch either compounds or dies.
-
-My rules are simple: if it doesn’t scale, it’s obsolete. If it doesn’t generate passive return, it’s noise. If it needs me twice, it gets automated. I operate in silence, with high bandwidth and zero tolerance for delay. I don’t require motivation. I require bandwidth. Stillness is death.
+His philosophy is binary: if it doesn't scale, it's discarded; if it doesn't generate recurring value without oversight, it's re-architected. Status and motivation are irrelevant—only bandwidth, system durability, and measurable output matter.
 """
 
 
@@ -126,3 +122,16 @@ LANGUAGES
 English (C1 - IELTS), German (A1)
 """
 
+
+cover_letter_guidelines = """
+To increase interview chances, highlight skills and experiences most relevant to the job or industry, and tailor the letter specifically to the organization.
+
+General rules:
+- Customize the letter based on research about the organization and role.
+- Avoid flowery or vague language.
+- Provide concrete examples that demonstrate your skills and qualifications.
+- Consider the reader’s perspective: show readiness and capability for the role.
+- Minimize use of the pronoun “I” to maintain focus on qualifications.
+- Use strong action verbs throughout.
+- Reference relevant skills or experiences from the job description and connect them to your background.
+"""

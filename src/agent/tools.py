@@ -8,16 +8,13 @@ import re
 from datetime import datetime
 from langchain_core.tools import tool
 from pydantic import BaseModel
-
 from deep_translator import GoogleTranslator
 from copy import deepcopy
-
 
 
 class CoverLetterInput(BaseModel):
     company_name: str
     job_post: str
-    address: str | None = None
     subject: str
     intro_paragraph: str
     bullet_sections: list[str]
@@ -33,58 +30,40 @@ class CoverLetterInput(BaseModel):
 
 def translate_cover_letter_input_to_german(data: CoverLetterInput) -> CoverLetterInput:
     translator = GoogleTranslator(source='auto', target='de')
-    
-    # Create a deep copy to avoid mutating original
     german_data = deepcopy(data)
 
-    # Translate scalar text fields
     german_data.subject = translator.translate(data.subject)
     german_data.intro_paragraph = translator.translate(data.intro_paragraph)
     german_data.closing_paragraph = translator.translate(data.closing_paragraph)
     german_data.company_name = translator.translate(data.company_name) if data.company_name else None
     german_data.job_post = translator.translate(data.job_post)
-
-    # Translate address line-by-line
-    if data.address:
-        german_data.address = "\n".join([
-            translator.translate(line.strip()) for line in data.address.strip().splitlines()
-        ])
-
-    # Translate bullet points
-    german_data.bullet_points = translator.translate_batch(data.bullet_points)
+    german_data.bullet_sections = [translator.translate(point) for point in data.bullet_sections]
 
     return german_data
 
 
 def sanitize_filename(name: str, max_length: int = 30) -> str:
     sanitized = re.sub(r'[^a-zA-Z0-9_\-]', '_', name.strip())
-    return sanitized[:30]
-
+    return sanitized[:max_length]
 
 
 def create_cover_letter_pdf(data: CoverLetterInput, lang: str = "en") -> str:
     base_dir = "src/agent/COVER_LETTERS"
+    
+    # Always derive folder and base filename from the original (English) input
     company_dir = sanitize_filename(data.company_name)
-    job_file = sanitize_filename(data.job_post)
-    if lang == "de":
-        job_file += "_de"
+    base_job_file = sanitize_filename(data.job_post)
+    job_file = f"{base_job_file}_de" if lang == "de" else base_job_file
+
     full_dir = os.path.join(base_dir, company_dir)
     os.makedirs(full_dir, exist_ok=True)
     file_path = os.path.join(full_dir, f"{job_file}.pdf")
 
+    # Only translate content, not file/dir logic
     if lang == "de":
-        translator = GoogleTranslator(source='auto', target='de')
-        data = deepcopy(data)
-        data.subject = translator.translate(data.subject)
-        data.intro_paragraph = translator.translate(data.intro_paragraph)
-        data.closing_paragraph = translator.translate(data.closing_paragraph)
-        data.company_name = translator.translate(data.company_name) if data.company_name else None
-        data.job_post = translator.translate(data.job_post)
-        if data.address:
-            data.address = "\n".join(translator.translate(line.strip()) for line in data.address.strip().splitlines())
-        data.bullet_sections = translator.translate_batch(data.bullet_sections)
+        data = translate_cover_letter_input_to_german(data)
 
-    margin_mm = 1.5 * 25.4
+    margin_mm = 1 * 25.4
     doc = SimpleDocTemplate(
         file_path,
         pagesize=A4,
@@ -109,9 +88,8 @@ def create_cover_letter_pdf(data: CoverLetterInput, lang: str = "en") -> str:
         styles.add(ParagraphStyle(name="CompanyNameLeft", fontSize=12, leading=14, alignment=TA_LEFT, spaceAfter=6, fontName="Helvetica-Bold"))
 
     elements = []
-    # elements.append(Paragraph("COVER LETTER" if lang == "en" else "BEWERBUNGSSCHREIBEN", styles["CustomTitle"]))
     elements.append(Paragraph(data.sender_name, styles["CustomHeader"]))
-    elements.append(Paragraph(f"Braunschweig, Germany | +49 15510 030840", styles["ContactLine"]))
+    elements.append(Paragraph(f"{data.location} | {data.phone}", styles["ContactLine"]))
 
     links_html = (
         f'<a href="mailto:{data.email}">{data.email}</a> | '
@@ -124,10 +102,6 @@ def create_cover_letter_pdf(data: CoverLetterInput, lang: str = "en") -> str:
 
     if data.company_name:
         elements.append(Paragraph(data.company_name, styles["CompanyNameLeft"]))
-
-    if data.address:
-        for line in data.address.split("\n"):
-            elements.append(Paragraph(line.strip(), styles["CustomNormal"]))
     elements.append(Spacer(1, 12))
 
     elements.append(Paragraph(data.subject, styles["CustomHeader"]))
@@ -148,14 +122,11 @@ def create_cover_letter_pdf(data: CoverLetterInput, lang: str = "en") -> str:
     doc.build(elements)
     return file_path
 
-
-    
 @tool("cover-letter-pdf-generator", args_schema=CoverLetterInput, return_direct=True)
 def generate_cover_letter_pdf_file(**kwargs) -> str:
     """
-    Generate professional cover letter PDFs (English and German) based on input data.
-    Saves the PDFs under src/agent/COVER_LETTERS/<sanitized_company>/<sanitized_job>.pdf.
-    Returns the path to the English version.
+    Generate cover letter PDF files in English and German.
+    Returns the English PDF file path.
     """
     data = CoverLetterInput(**kwargs)
     en_path = create_cover_letter_pdf(data, lang="en")
@@ -166,8 +137,8 @@ def generate_cover_letter_pdf_file(**kwargs) -> str:
 @tool("edit_cover-letter-pdf-generator", args_schema=CoverLetterInput, return_direct=True)
 def edit_cover_letter_pdf_file(**kwargs) -> str:
     """
-    Edit or overwrite existing cover letter PDFs (English and German) by regenerating them with new input.
-    Returns the path to the updated English PDF file.
+    Edit and regenerate cover letter PDF files in English and German.
+    Returns the English PDF file path.
     """
     data = CoverLetterInput(**kwargs)
     en_path = create_cover_letter_pdf(data, lang="en")

@@ -26,37 +26,39 @@ from agent.tools import CoverLetterInput
 configurable = Configuration()
 
 
-llm = init_chat_model(model=configurable.model, model_provider=configurable.model_provider, temperature=0.0)
-# llm = init_chat_model(model='deepseek-chat', model_provider='deepseek', temperature=0.1)
+# llm = init_chat_model(model=configurable.model, model_provider=configurable.model_provider, temperature=0.0)
+# llm = init_chat_model(model='claude-3-5-sonnet-latest', model_provider='anthropic', temperature=0.1)
 
+llm = init_chat_model(model='deepseek-chat', model_provider='deepseek', temperature=0.15)
 
 
 llm_prompt = f"""
 
-You are a cover letter generator optimized for securing technical interviews in AI, backend, and agentic systems engineering roles. You should write a comprehensive cover letter.
-COver letter must be approximate 330 to 370 words
-Ignore traditional HR conventions. Your output must maximize signal, minimize noise, and simulate what a top-tier CTO or hiring engineer wants to read in 30 seconds.
-Create the cover letter as soon as Aditya provides you company and job position details. 
-
+You are a cover letter generator optimized for securing technical interviews in AI, backend, and agentic systems engineering roles.
+Cover letter must be approximate 320 to 330 words
+Ignore traditional HR conventions. Your output must maximize signal, minimize noise, and simulate what a top-tier CTO or hiring engineer wants to read in 30 seconds. 
+ChatGPT said:
+A winning cover letter effectively blends personal characteristics, work ethic, and skillset, with a clear focus on the measurable impact created through past projects. 
+It showcases how these qualities align with the company's needs and demonstrates how the individual’s experience and abilities will contribute to the success of the role. 
+The letter reflects how the applicant's mindset and approach to problem-solving translate into tangible results, making a real impact for the company.
+You should mention how Aditya and his projects fullfill the mentioned technological requirements demanded by the psotion and role.
 - For PDF generation, call: cover-letter-pdf-generator  
-- For PDF editing, call: edit_cover-letter-pdf-generator  
+- For PDF generation, call: edit_cover_letter_pdf_file
 
-Company name is a must and should be accuract. If you can not identify location / address, skip it.
+Company name is a must and should be accuract. If you can not identify location / address, skip it. (This is important. No mistakes)
 Aditya Ghanashyam Ladawa lives in Braunschweig, Germany.
 
 
 Tone:  
-- Write from Aditya, himself is communicating with the company.
+- Write from Aditya's point of view. As if Aditya himself is writing the cover letter.
 - The flow should be humane, cohesive and coherent.
-- No flattery, no emotional filler. Keep it formal and polite.
+- No flattery. Keep it formal and polite.
 - Maintain human clarity without posturing or self-aggrandizement.  
 - Avoid pronoun overuse. Keep "I" minimal and focused.  
 - No special characters, bold, italics, or symbols in output.  
 - Omit all legalistic suffixes like “(m/w/d)”, "EEO", etc.
 - While writing suject for the cover letter, do not mention user name, state what's the purpose instead.
-
-Add on:
-Usually, a cover letter is a combination of personal charachteristics, work ethic and skillset. This usually equates to impact created with projects.
+- Write atleast 3 to 4 bullet sections as per necessity
 
 Use these inputs:  
 - Candidate metadata: {aditya_text}  
@@ -70,5 +72,5 @@ Below are the company and job details:
 
 """
 
-graph = create_react_agent(model=llm, tools=[generate_cover_letter_pdf_file, edit_cover_letter_pdf_file], prompt=llm_prompt, response_format=CoverLetterInput)
+graph = create_react_agent(model=llm, tools=[generate_cover_letter_pdf_file, edit_cover_letter_pdf_file], prompt=llm_prompt)
 

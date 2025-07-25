@@ -120,6 +120,13 @@ Automation: Selenium, Playwright, spaCy, Tavily
 
 LANGUAGES
 English (C1 - IELTS), German (A1)
+
+HACKATHON PROJECTS:
+1. Automated Metrics & Inference Generation for Blood-Driven Diseases (March 27, 2025)
+This project aims to develop a pipeline that automatically extracts new metrics, tests, inferences, implications, hypotheses, and results from the latest research papers on blood-driven diseases or infections. The goal is to move beyond outdated metrics traditionally used in the industry for drawing conclusions. The pipeline utilizes Gemini 2.0 Flash for multimodal data extraction from various research papers, generating a comprehensive report with inferences and implications, where available. This will streamline the process of identifying cutting-edge research findings and improve decision-making in medical research.
+
+2. Skill2Monetization Coach (July 20, 2025)
+A multi-agent hierarchical architecture designed to guide users from having no skills to acquiring monetizable expertise. The system features skill assessments, progress tracking, roadmap planning, market gap analysis, and strategic research, all tailored to help users bridge the gap between their current abilities and the skills in demand. The coach provides personalized, actionable insights, ensuring users develop skills that are not only marketable but also aligned with current industry trends, enhancing their employability and career growth.
 """
 
 

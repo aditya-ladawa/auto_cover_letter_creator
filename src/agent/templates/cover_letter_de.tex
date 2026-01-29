@@ -1,52 +1,71 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[left=0.5in,top=0.5in,right=0.5in,bottom=0.5in]{geometry}
+\usepackage[left=0.75in,top=0.6in,right=0.75in,bottom=0.6in]{geometry}
 \hyphenpenalty=10000
 \exhyphenpenalty=10000
 \usepackage[sfdefault]{carlito} % Calibri-like font
 \usepackage[ngerman]{babel} % German language support
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue]{hyperref}
+\usepackage{enumitem} % Better list control
 \pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
 
 \begin{document}
 
 % Header with contact information
 \begin{center}
-{\Large\textbf{{{FULL_NAME}}}}\\[0.15cm]
-{{LOCATION}} | {{PHONE}}\\[0.05cm]
-\href{mailto:{{EMAIL}}}{{{EMAIL}}} | \href{{{LINKEDIN_URL}}}{LinkedIn} | \href{{{GITHUB_URL}}}{GitHub}\\[0.25cm]
+{\Large\textbf{{{FULL_NAME}}}}\\[0.1cm]
+{{LOCATION}} --- {{PHONE}}\\[0.03cm]
+\href{mailto:{{EMAIL}}}{{{EMAIL}}} --- \href{{{LINKEDIN_URL}}}{LinkedIn} --- \href{{{GITHUB_URL}}}{GitHub}
 \end{center}
 
-% Date (German format)
-{{DATE}}\\[0.2cm]
+\vspace{0.3cm}
 
-% Company information (if available)
+% Date (German format)
+{{DATE}}
+
+\vspace{0.1cm}
+
+% Company information
 {{COMPANY_NAME}}\\
-{{COMPANY_ADDRESS}}\\[0.2cm]
+{{COMPANY_ADDRESS}}
+
+\vspace{0.15cm}
 
 % Subject line
-\textbf{Betreff: {{SUBJECT}}}\\[0.2cm]
+\textbf{Betreff: {{SUBJECT}}}
+
+\vspace{0.15cm}
 
 % Salutation
-{{SALUTATION}}\\[0.2cm]
+{{SALUTATION}}
+
+\vspace{0.1cm}
 
 % Introduction paragraph
-{{INTRO_PARAGRAPH}}\\[0.2cm]
+{{INTRO_PARAGRAPH}}
+
+\vspace{0.1cm}
 
 % Bullet points showcasing relevant experience and skills
-\begin{itemize}
-\setlength{\itemsep}{0.1cm}
+\begin{itemize}[leftmargin=0.2in, itemsep=4pt, topsep=2pt, label=\textbullet]
 {{BULLET_SECTIONS}}
 \end{itemize}
 
-\vspace{0.2cm}
+\vspace{0.1cm}
 
 % Closing paragraph
-{{CLOSING_PARAGRAPH}}\\[0.2cm]
+{{CLOSING_PARAGRAPH}}
+
+\vspace{0.15cm}
 
 % Sign-off (German)
-Mit freundlichen Grüßen,\\[0.3cm]
+Mit freundlichen Grüßen,
+
+\vspace{0.2cm}
+
 {{FULL_NAME}}
 
 \end{document}

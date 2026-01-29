@@ -544,3 +544,637 @@ right for their specific challenge.
 
 WRITE FROM YOUR HEART. YOU KNOW YOURSELF. SHOW THEM.
 """
+
+
+# ============================================================================
+# ATS RESUME TAILORING GUIDE
+# ============================================================================
+
+ATS_OPTIMIZATION_GUIDE = """
+ATS RESUME TAILORING - COMPREHENSIVE GUIDE
+============================================
+
+⚠️ CRITICAL WARNING - READ THIS FIRST ⚠️
+==========================================
+You MUST rewrite EVERY SINGLE bullet point in ALL sections.
+You MUST NOT add ANY information not in the original.
+You MUST preserve ALL metrics, dates, technologies, and company names EXACTLY.
+
+VIOLATION OF THESE RULES = COMPLETE FAILURE
+
+YOUR MISSION: Transform resume bullets to maximize ATS keyword matching while 
+preserving ALL original metrics, technologies, and meaning.
+
+================================================================================
+SECTION 1: HOW ATS SYSTEMS WORK
+================================================================================
+
+1. KEYWORD MATCHING (Most Important)
+   - ATS scans for EXACT keywords from the job description
+   - Both hard skills (Python, TensorFlow) and soft skills (cross-functional, agile)
+   - Job titles and role-specific terms
+
+2. KEYWORD FREQUENCY 
+   - Keywords appearing 2-3 times score higher
+   - But don't keyword-stuff - must sound natural
+
+3. CONTEXTUAL MATCHING
+   - Modern ATS uses NLP to understand context
+   - Keywords near action verbs and metrics rank higher
+
+4. SECTION RECOGNITION
+   - ATS expects standard sections: Experience, Education, Skills
+   - Your resume already uses standard sections - DO NOT CHANGE STRUCTURE
+
+================================================================================
+SECTION 2: ABSOLUTE PRESERVATION RULES - NEVER VIOLATE
+================================================================================
+
+⚠️⚠️⚠️ VIOLATION OF ANY RULE BELOW = INSTANT FAILURE ⚠️⚠️⚠️
+
+RULE 1: COPY NUMBERS EXACTLY - NO CHANGES ALLOWED
+--------------------------------------------------
+ORIGINAL: "80% improvement"
+REWRITTEN: MUST contain "80% improvement" (identical)
+
+ORIGINAL: "17,000 followers in 3 months"
+REWRITTEN: MUST contain "17,000 followers" AND "3 months" (identical)
+
+ORIGINAL: "2,500 papers in 90 seconds"
+REWRITTEN: MUST contain "2,500 papers" AND "90 seconds" (identical)
+
+ORIGINAL: "99%+ uptime over 4 months"
+REWRITTEN: MUST contain "99%+ uptime" AND "4 months" (identical)
+
+❌ NEVER ROUND NUMBERS (80% → 80%, NOT "roughly 80%" or "approximately 80%")
+❌ NEVER CHANGE TIMEFRAMES (4 months → 4 months, NOT "several months")
+❌ NEVER ALTER PERCENTAGES (99%+ → 99%+, NOT "99%" or "nearly 100%")
+
+RULE 2: COPY ALL TECHNOLOGIES EXACTLY - NO OMISSIONS
+-----------------------------------------------------
+ORIGINAL: "Prophet-based demand forecasting system benchmarked against Chronos-2 and Moirai"
+REWRITTEN: MUST mention ALL THREE: Prophet, Chronos-2, Moirai
+
+ORIGINAL: "LangGraph multi-agent system with LangChain and Qdrant"
+REWRITTEN: MUST mention ALL THREE: LangGraph, LangChain, Qdrant
+
+ORIGINAL: "AWS pipeline (ECS, ECR, EventBridge)"
+REWRITTEN: MUST mention ALL: AWS, ECS, ECR, EventBridge
+
+❌ NEVER DROP TECHNOLOGIES
+❌ NEVER REPLACE WITH GENERIC TERMS (AWS ECS → "cloud", WRONG!)
+❌ NEVER SIMPLIFY STACK LISTS
+
+RULE 3: COPY COMPANY/PROJECT NAMES EXACTLY
+-------------------------------------------
+ORIGINAL: "Brandl Nutrition"
+REWRITTEN: "Brandl Nutrition" (identical spelling)
+
+ORIGINAL: "TU Braunschweig"
+REWRITTEN: "TU Braunschweig" (identical)
+
+ORIGINAL: "SciBiome (Data Science in Bio-Medicine)"
+REWRITTEN: "SciBiome (Data Science in Bio-Medicine)" (identical)
+
+❌ NEVER ALTER COMPANY NAMES
+❌ NEVER ABBREVIATE UNNECESSARILY
+
+RULE 4: PRESERVE EXACT MEANING - NO EXAGGERATION OR FABRICATION
+----------------------------------------------------------------
+ORIGINAL: "Built forecasting system"
+ALLOWED: "Developed demand forecasting pipeline"
+FORBIDDEN: "Architected enterprise-scale forecasting platform" (exaggeration)
+FORBIDDEN: "Led team to build forecasting system" (if you didn't lead)
+FORBIDDEN: "Built AI-powered forecasting system" (if AI wasn't mentioned)
+
+ORIGINAL: "Reduced screening time from days to 90 seconds"
+ALLOWED: "Accelerated literature screening from days to 90 seconds"
+FORBIDDEN: "Eliminated manual screening entirely" (overstating)
+FORBIDDEN: "Reduced screening time by 99%" (if exact % not given)
+
+❌ NEVER ADD CAPABILITIES NOT IN ORIGINAL
+❌ NEVER CLAIM LEADERSHIP IF NOT STATED
+❌ NEVER INFLATE SCOPE OR IMPACT
+
+RULE 5: REWRITE ALL BULLETS - NO EXCEPTIONS
+--------------------------------------------
+If original has 3 bullets → tailored MUST have 3 bullets
+If original has 15 bullets across all sections → ALL 15 must be rewritten
+
+❌ NEVER SKIP BULLETS
+❌ NEVER COMBINE BULLETS
+❌ NEVER SPLIT ONE BULLET INTO MULTIPLE
+
+================================================================================
+SECTION 3: POWER ACTION VERBS (Replace weak verbs with these)
+================================================================================
+
+FOR TECHNICAL ROLES - Use these to start bullets:
+---------------------------------------------------
+BUILDING: Developed, Engineered, Architected, Implemented, Built, Designed
+ANALYSIS: Analyzed, Evaluated, Assessed, Benchmarked, Measured, Quantified
+OPTIMIZATION: Optimized, Streamlined, Accelerated, Enhanced, Improved, Scaled
+AUTOMATION: Automated, Orchestrated, Integrated, Deployed, Containerized
+LEADERSHIP: Led, Spearheaded, Directed, Coordinated, Managed, Mentored
+ACHIEVEMENT: Achieved, Delivered, Reduced, Increased, Exceeded, Generated
+
+AVOID THESE WEAK VERBS:
+-----------------------
+❌ "Responsible for" → ✓ "Led" or "Managed"
+❌ "Worked on" → ✓ "Developed" or "Built"
+❌ "Helped with" → ✓ "Collaborated on" or "Contributed to"
+❌ "Assisted in" → ✓ "Supported" or specific action
+❌ "Was involved in" → ✓ State the specific action taken
+
+================================================================================
+SECTION 4: KEYWORD INJECTION STRATEGIES - BE AGGRESSIVE
+================================================================================
+
+⚠️ CRITICAL: Your goal is to add 3-5 job keywords per bullet WITHOUT removing anything.
+The tailored version should be LONGER than the original (10-25% more characters).
+
+STRATEGY 1: ADD DESCRIPTIVE PHRASES BEFORE NOUNS
+-------------------------------------------------
+If job mentions "production ML systems":
+Original: "Built forecasting system"
+Rewrite: "Built production-grade ML forecasting system"
+         ^add job keywords^  ^keep original^
+
+If job mentions "scalable data pipelines":
+Original: "processing 111,000 records"
+Rewrite: "processing 111,000 records through scalable data pipeline architecture"
+         ^keep original^              ^add job keywords^
+
+STRATEGY 2: EXPAND TECHNOLOGIES WITH ROLE CONTEXT
+--------------------------------------------------
+If job mentions "cloud infrastructure":
+Original: "AWS pipeline (ECS, ECR, EventBridge)"
+Rewrite: "AWS cloud infrastructure pipeline (ECS, ECR, EventBridge) for automated deployment"
+         ^add job keyword^                                          ^add context from job^
+
+If job mentions "full-stack development":
+Original: "NextJS, FastAPI"
+Rewrite: "full-stack application using NextJS frontend and FastAPI backend"
+         ^add job keyword^
+
+STRATEGY 3: ADD IMPACT PHRASES WITH JOB KEYWORDS
+-------------------------------------------------
+If job mentions "cross-functional collaboration":
+Original: "Saved team 2+ hours daily"
+Rewrite: "Saved team 2+ hours daily through cross-functional collaboration on automated solutions"
+         ^keep original^              ^add job keyword^
+
+If job mentions "agile development":
+Original: "Built multi-agent system"
+Rewrite: "Built multi-agent system using agile development practices"
+         ^keep original^              ^add job keyword^
+
+STRATEGY 4: MIRROR EXACT JOB PHRASES IN CONTEXT
+------------------------------------------------
+If job says "end-to-end ML lifecycle":
+Original: "Developed CycleGAN model in TensorFlow 2"
+Rewrite: "Developed end-to-end ML solution using CycleGAN model in TensorFlow 2"
+         ^add exact job phrase^
+
+If job says "real-time data processing":
+Original: "processing 100-paper batches via 12 parallel API calls"
+Rewrite: "real-time data processing of 100-paper batches via 12 parallel API calls"
+         ^add exact job phrase^
+
+STRATEGY 5: EXPAND ACRONYMS WITH KEYWORDS
+------------------------------------------
+If job mentions "machine learning":
+Original: "ML models"
+Rewrite: "production machine learning (ML) models"
+         ^add context^ ^expand acronym^
+
+If job mentions "natural language processing":
+Original: "NLP feedback system"
+Rewrite: "natural language processing (NLP) feedback system for real-time analysis"
+         ^expand acronym^                                    ^add context^
+
+================================================================================
+CRITICAL RULES FOR KEYWORD INJECTION
+================================================================================
+
+✅ DO THIS (SIMPLE INSERTION):
+- Check JD for specific tools (e.g., "Docker", "Kubernetes", "CI/CD")
+- If you used them (or they are standard for that project type), ADD THEM
+- Insert them naturally into the list of tools
+- Example: "Built using Python" → "Built using Python, Docker, and CI/CD pipelines"
+
+✅ DO THIS (PHRASE MATCHING):
+- JD: "collaborate with cross-functional teams"
+- YOURS: "Worked with team" → "Collaborated with cross-functional team"
+
+❌ NEVER DO THIS (COMPLEX INVENTION):
+- Do NOT invent complex workflows just to add a keyword
+- JD: "experience with scalable microservices deployment"
+- BAD: "Built... implementing scalable microservices deployment methodologies for consistency" (HALLUCINATION)
+- GOOD: "Built... designed for scalability" (Simple, true)
+
+⛔ SPECIFIC BAN LIST (NEVER USE):
+- "deployment optimization"
+- "consistency measurement"
+- "compliance with X standards" (unless true)
+- "reliable AI system deployment"
+- "production-ready" (unless true)
+
+BULLETS LENGTH:
+- CAN be SHORTER if removing filler makes them more ATS-focused
+- CAN be LONGER only if adding legitimate keywords
+- Priority is ATS OPTIMIZATION, not length
+
+WHAT TO REMOVE (filler):
+- "demonstrated familiarity with"
+- "showcasing abilities in"
+- "aiming to achieve"
+- Academic phrasing ("divergent conceptual framing")
+
+WHAT TO ADD (ATS content):
+- Specific Tools (Pandas, NumPy, AWS, Azure, GCP)
+- Hard Skills (Data Analysis, NLP, Computer Vision)
+- Exact JD terms where they genuinely fit
+
+EXAMPLE - CORRECT INJECTION:
+
+Job Description: "Requires Python, AWS, Docker, NLP experience"
+
+ORIGINAL:
+"Built analysis tool using Python to process tweets"
+
+❌ BAD (Invention):
+"Built analysis tool using Python with AWS cloud deployment optimization and Docker containerization for NLP workflow consistency"
+(Too much invention!)
+
+✅ GOOD (Injection):
+"Built NLP analysis tool using Python, Docker, and AWS for processing tweets"
+(Simple, effective, hitting all keywords without fluff)
+
+
+================================================================================
+SECTION 5: VERIFICATION CHECKLIST - DO THIS FOR EVERY BULLET
+================================================================================
+
+Before marking a bullet as complete, verify:
+
+☐ ALL numbers from original are preserved? (Check every digit)
+☐ ALL technologies ACTUALLY USED are mentioned? (Only real ones)
+☐ ALL company/project names spelled identically?
+☐ Core meaning/accomplishment preserved?
+☐ NO false capabilities added? (NO HALLUCINATION)
+☐ NO technologies added that weren't actually used?
+☐ Starts with strong action verb?
+☐ Contains keywords from job description?
+☐ Reads naturally (not keyword-stuffed)?
+
+IF ANY CHECKBOX FAILS → REWRITE THE BULLET AGAIN
+
+
+================================================================================
+SECTION 6: REWRITING EXAMPLES - STUDY THESE CAREFULLY
+================================================================================
+
+EXAMPLE 1: Demand Forecasting
+------------------------------
+ORIGINAL:
+"Eliminated stock-outs across 60+ products by deploying a Prophet-based demand 
+forecasting system in production, achieving an 80% improvement in purchase 
+decision quality, using Python and EOQ-driven inventory optimization"
+
+CORRECT REWRITE (for ML Engineer job mentioning "production ML pipelines"):
+"Deployed production ML pipeline using Prophet-based demand forecasting model, 
+eliminating stock-outs across 60+ products and achieving 80% improvement in 
+purchase decision quality through Python and EOQ-driven inventory optimization"
+
+Preserved: 60+ products, Prophet, 80% improvement, Python, EOQ
+Added: "production ML pipeline" (from job), "deployed" (stronger verb)
+Length: Similar (within 15%)
+
+INCORRECT REWRITE (HALLUCINATION):
+"Built enterprise-scale ML forecasting platform reducing inventory costs by 80% 
+across the supply chain using Prophet and advanced optimization algorithms"
+
+Why wrong:
+❌ "enterprise-scale" - not in original
+❌ "reducing inventory costs by 80%" - original said "purchase decision quality"
+❌ Missing "60+ products"
+❌ Missing "EOQ-driven"
+❌ "across supply chain" - too vague, original was specific
+
+EXAMPLE 2: Literature Screening
+--------------------------------
+ORIGINAL:
+"Reduced literature screening from days to 90 seconds for 2,500 papers by building 
+async system with Google Gemini and FastAPI processing 100-paper batches via 12 
+parallel API calls at 95% success rate"
+
+CORRECT REWRITE (for AI/ML Engineer job mentioning "API integration"):
+"Built async literature screening system with Google Gemini and FastAPI, reducing 
+screening time from days to 90 seconds for 2,500 papers through parallel API 
+integration processing 100-paper batches via 12 concurrent calls at 95% success rate"
+
+Preserved: days to 90 seconds, 2,500 papers, Google Gemini, FastAPI, 100-paper batches, 
+12 parallel calls, 95% success rate
+Added: "parallel API integration" (job keyword), "concurrent" (synonym)
+
+INCORRECT REWRITE (HALLUCINATION):
+"Developed AI-powered literature review system achieving 99% accuracy by screening 
+thousands of papers in minutes using Google Gemini API with advanced NLP"
+
+Why wrong:
+❌ "99% accuracy" - original said "95% success rate"
+❌ "thousands of papers in minutes" - original was "2,500 papers" and "90 seconds"
+❌ Missing FastAPI, missing 100-paper batches, missing 12 parallel calls
+❌ "advanced NLP" - not mentioned in original
+
+================================================================================
+SECTION 7: OUTPUT FORMAT
+================================================================================
+
+When using generate-tailored-resume-pdf tool, provide COMPLETE DATA:
+
+For each experience section:
+{
+  "job_title": "COPY EXACTLY FROM ORIGINAL",
+  "company": "COPY EXACTLY FROM ORIGINAL",
+  "bullet_points": [
+    {
+      "original_text": "EXACT text from resume template",
+      "tailored_text": "Rewritten version with keywords"
+    },
+    // ONE ENTRY FOR EVERY BULLET - NO EXCEPTIONS
+  ]
+}
+
+CRITICAL: 
+- If original has N bullets, tailored MUST have N bullets
+- Every bullet must have both original_text and tailored_text
+- Count bullets before and after to verify
+
+================================================================================
+SECTION 8: FINAL WARNING
+================================================================================
+
+❌ ADDING FALSE INFORMATION = AUTOMATIC REJECTION BY HR
+❌ EXAGGERATING RESPONSIBILITIES = ETHICAL VIOLATION
+❌ OMITTING ORIGINAL DETAILS = INCOMPLETE TAILORING
+
+✓ PRESERVE TRUTH
+✓ ADD KEYWORDS NATURALLY  
+✓ REWRITE ALL BULLETS
+✓ VERIFY EVERY DETAIL
+
+Your goal: Pass ATS while maintaining 100% honesty.
+"""
+
+# ==============================================================================
+# NEW RESUME TAILORING STRATEGY (SKILLS FIRST + SURGICAL EDITS)
+# ==============================================================================
+ATS_OPTIMIZATION_GUIDE = """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RESUME TAILORING STRATEGY: SKILLS FIRST + SURGICAL KEYWORD INJECTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+GOAL: 100% ATS pass rate by injecting JD keywords strategically.
+
+STRATEGY:
+1. 🟢 SKILLS: Complete rewrite with ALL JD keywords (primary ATS match)
+2. 🟡 BULLETS: Surgical keyword injection (append relevant tech to existing bullets)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1: KEYWORD EXTRACTION (Do this FIRST)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+From the Job Description, extract:
+
+HARD SKILLS (Tools/Tech):
+- Programming languages: Python, Java, C++, JavaScript, SQL
+- Frameworks: TensorFlow, PyTorch, FastAPI, React, Django
+- Libraries: NumPy, Pandas, Scikit-learn, OpenCV
+- Cloud: AWS, GCP, Azure, Docker, Kubernetes, CI/CD
+- Databases: PostgreSQL, MongoDB, Redis, Qdrant, Neo4j
+- ML/AI: LLMs, RAG, Computer Vision, NLP, MLOps
+
+SOFT SKILLS / CONCEPTS:
+- "cross-functional collaboration"
+- "agile development"
+- "production systems"
+- "data pipelines"
+- "real-time processing"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2: SKILLS SECTION (Rewrite Completely)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The SKILLS section carries 60% of ATS keyword matching.
+
+RULES:
+1. Include ALL technical keywords from JD
+2. Prioritize JD keywords at the beginning
+3. Keep existing skills that are relevant
+4. Remove irrelevant skills to make space
+
+FORMAT:
+JD Keywords first, then existing relevant skills, comma-separated.
+
+EXAMPLE:
+JD: "Python, Kubernetes, Docker, AWS, MLOps, CI/CD, PostgreSQL"
+Current: "Python, JavaScript, FastAPI, TensorFlow, PyTorch, SQL"
+New: "Python, Kubernetes, Docker, AWS, MLOps, CI/CD, PostgreSQL, FastAPI, TensorFlow, PyTorch, JavaScript, SQL"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3: BULLET POINTS (Surgical Keyword Injection)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ CRITICAL: DO NOT REWRITE BULLETS. Only APPEND relevant keywords.
+Do NOT replace or compress original details just to fit keywords.
+
+THE SURGICAL EDIT FORMULA:
+Original text + ", using [KEYWORD1], [KEYWORD2], and [KEYWORD3]"
+
+MAXIMUM EDIT SCOPE:
+- Add 3-6 keywords per bullet (only if true)
+- Keep 75%+ of the original text unchanged
+
+OR insert keywords into existing tech lists:
+"using PyTorch" → "using PyTorch, NumPy, and OpenCV"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SURGICAL EDIT EXAMPLES (STUDY THESE CAREFULLY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXAMPLE 1 - Image Pipeline:
+JD Keywords: "PyTorch, OpenCV, NumPy, Computer Vision"
+
+BEFORE:
+"Built general-purpose image enhancement pipeline combining KBNets denoising with Real-ESRGAN 4K upscaling"
+
+AFTER (Surgical):
+"Built general-purpose image enhancement pipeline combining KBNets denoising with Real-ESRGAN 4K upscaling, using PyTorch, OpenCV, and NumPy"
+
+WHAT CHANGED: Added ", using PyTorch, OpenCV, and NumPy" at the end.
+WHAT STAYED: Everything else is IDENTICAL.
+
+---
+
+EXAMPLE 2 - Forecasting System:
+JD Keywords: "production ML, data pipelines, Python, Pandas"
+
+BEFORE:
+"Eliminated stock-outs across 60+ products by deploying a Prophet-based demand forecasting system in production, achieving an 80% improvement"
+
+AFTER (Surgical):
+"Eliminated stock-outs across 60+ products by deploying a Prophet-based demand forecasting system in production ML pipeline, achieving an 80% improvement using Python and Pandas"
+
+WHAT CHANGED: "production" → "production ML pipeline", added "using Python and Pandas"
+WHAT STAYED: Numbers, structure, meaning all IDENTICAL.
+
+---
+
+EXAMPLE 3 - Web Application:
+JD Keywords: "React, TypeScript, REST APIs, full-stack"
+
+BEFORE:
+"Developed full-stack web application (NextJS, FastAPI) enabling scientists to screen papers"
+
+AFTER (Surgical):
+"Developed full-stack web application (NextJS, FastAPI, REST APIs) enabling scientists to screen papers"
+
+WHAT CHANGED: Added "REST APIs" to the tech list in parentheses.
+WHAT STAYED: Everything else IDENTICAL.
+
+---
+
+EXAMPLE 4 - Multi-Agent System:
+JD Keywords: "LLMs, RAG, vector databases, NLP"
+
+BEFORE:
+"Built ReWOO-style multi-agent system with LangGraph, LangChain, and Qdrant"
+
+AFTER (Surgical):
+"Built ReWOO-style multi-agent LLM system with LangGraph, LangChain, and Qdrant vector database for RAG"
+
+WHAT CHANGED: Added "LLM", "vector database", "for RAG".
+WHAT STAYED: Core structure, tools mentioned, everything else.
+
+---
+
+EXAMPLE 5 - Data Analysis:
+JD Keywords: "NLP, sentiment analysis, data visualization"
+
+BEFORE:
+"Exposed ideological divergence by engineering an LLM-powered multi-layered discourse analysis system"
+
+AFTER (Surgical):
+"Exposed ideological divergence by engineering an LLM-powered multi-layered NLP discourse analysis system with sentiment analysis"
+
+WHAT CHANGED: Added "NLP", "with sentiment analysis".
+WHAT STAYED: Core description IDENTICAL.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ CRITICAL: TRUTHFULNESS RULES (READ CAREFULLY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NEVER LIE ABOUT WHAT YOU USED. Only add keywords for technologies ACTUALLY used.
+
+THE GOLDEN RULE: If you didn't use it, don't add it. Period.
+Never swap out concrete details for a keyword.
+
+🚫 SPECIFIC BANS - NEVER DO THESE:
+- Adding "RAG" to projects that don't retrieve from a knowledge base
+- Adding "LLMs" to projects that don't use language models
+- Adding "Docker" to projects not containerized
+- Adding "Kubernetes" when you only used Docker
+- Adding "CI/CD" to manual deployments
+- Adding "vector database" when there's no embeddings/similarity search
+
+✅ YOU CAN ONLY ADD KEYWORDS THAT ARE:
+1. Actually used in that specific project
+2. A more specific term for something already mentioned
+3. A standard library that's implicit (NumPy with PyTorch, Pandas with data analysis)
+
+EXAMPLE - WHAT'S ALLOWED:
+- "using PyTorch" → "using PyTorch, NumPy, and OpenCV" ✅ (standard CV stack)
+- "LangGraph multi-agent" → "LangGraph multi-agent LLM system" ✅ (LangGraph uses LLMs)
+- "Qdrant" → "Qdrant vector database" ✅ (Qdrant IS a vector DB)
+
+EXAMPLE - WHAT'S NOT ALLOWED:
+- "Reels pipeline" → "using LLMs and RAG" ❌ (if no retrieval from knowledge base)
+- "forecasting system" → "CI/CD pipeline" ❌ (if deployed manually)
+- "web scraping" → "using NLP" ❌ (scraping ≠ NLP)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KEYWORD-TO-PROJECT MATCHING (Conservative Approach)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Only add keywords that are DEFINITELY TRUE:
+
+✅ SAFE TO ADD (implicit/standard):
+- PyTorch project → "NumPy" (PyTorch uses NumPy tensors)
+- OpenCV project → "Computer Vision" (OpenCV IS computer vision)
+- Pandas project → "Data Analysis" (that's what Pandas does)
+- FastAPI project → "REST API" (FastAPI creates REST APIs)
+- LangGraph project → "LLMs" (LangGraph orchestrates LLMs)
+- Qdrant/Pinecone → "Vector Database" (they ARE vector DBs)
+- AWS ECS deployment → "Docker" (ECS runs Docker containers)
+
+❌ NEVER ADD (requires explicit proof):
+- "RAG" - Only if there's explicit retrieval + generation
+- "MLOps" - Only if there's ML lifecycle management
+- "CI/CD" - Only if there's automated deployment pipeline
+- "Kubernetes" - Only if K8s is explicitly used
+- "Microservices" - Only if architecture is actually microservices
+
+WHEN IN DOUBT: Don't add it. The Skills section already has all keywords.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INSERTION PATTERNS (Copy These Exactly)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PATTERN 1 - Append at end:
+"[original text], using [keyword1], [keyword2], and [keyword3]"
+
+PATTERN 2 - Expand existing tech list:
+"using X" → "using X, Y, and Z"
+"(X, Y)" → "(X, Y, Z)"
+
+PATTERN 3 - Add descriptor before noun:
+"system" → "production ML system"
+"pipeline" → "data pipeline"
+"application" → "full-stack application"
+
+PATTERN 4 - Add "for" clause:
+"Built X" → "Built X for [purpose matching JD]"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT NOT TO DO (BANNED)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ NEVER rewrite the entire bullet structure
+❌ NEVER change metrics or numbers
+❌ NEVER remove existing technologies
+❌ NEVER add technologies you didn't actually use
+❌ NEVER remove or shorten original details to make space for keywords
+❌ NEVER use these phrases:
+   - "deployment optimization"
+   - "methodologies"
+   - "demonstrated familiarity with"
+   - "reliable AI system deployment"
+   - "consistency measurement"
+   - "showcasing abilities in"
+   - "aiming to achieve"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VERIFICATION CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Before generating PDF, verify:
+
+☐ SKILLS: Contains 90%+ of JD technical keywords?
+☐ BULLETS: Changes are <25% of original text length?
+☐ METRICS: All numbers preserved exactly (80%, 60+, 4 months, etc.)?
+☐ TECH: All original technologies still present?
+☐ STRUCTURE: Bullet flow and meaning unchanged?
+☐ HONESTY: No technologies added that weren't used?
+"""

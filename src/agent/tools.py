@@ -37,6 +37,616 @@ class CoverLetterInput(BaseModel):
 
 
 # ============================================================================
+# Resume Tailoring Models
+# ============================================================================
+
+class ResumeBulletPoint(BaseModel):
+    """Single bullet point from resume"""
+    original_text: str = Field(description="Original bullet point text from resume")
+    tailored_text: str = Field(description="ATS-optimized version with job keywords")
+
+
+class ResumeExperienceSection(BaseModel):
+    """Professional experience entry"""
+    job_title: str = Field(description="Job title")
+    company: str = Field(description="Company name")
+    bullet_points: List[ResumeBulletPoint] = Field(description="List of bullet points for this role")
+
+
+class ResumeProjectSection(BaseModel):
+    """Project entry"""
+    project_name: str = Field(description="Project name")
+    bullet_points: List[ResumeBulletPoint] = Field(description="List of bullet points for this project")
+
+
+class ResumeHackathonSection(BaseModel):
+    """Hackathon project entry"""
+    project_name: str = Field(description="Hackathon project name")
+    description: ResumeBulletPoint = Field(description="Single description paragraph")
+
+
+class ResumeInput(BaseModel):
+    """Input schema for resume tailoring"""
+    company_name: str = Field(description="Target company name")
+    job_position: str = Field(description="Job position/title being applied for")
+    job_description: str = Field(description="Full job description text to optimize resume for")
+
+
+class TailoredResumeOutput(BaseModel):
+    """Output schema containing all tailored resume sections"""
+    experience_sections: List[ResumeExperienceSection] = Field(description="Tailored professional experience")
+    project_sections: List[ResumeProjectSection] = Field(description="Tailored projects")
+    hackathon_sections: List[ResumeHackathonSection] = Field(description="Tailored hackathon projects")
+    skills: str = Field(description="Updated skills line with relevant skills for this job")
+
+
+# ============================================================================
+# Resume Template Functions
+# ============================================================================
+
+def load_resume_template() -> str:
+    """Load the resume LaTeX template"""
+    template_path = Path(__file__).parent / "templates" / "resume_en.tex"
+    if not template_path.exists():
+        raise FileNotFoundError(f"Resume template not found: {template_path}")
+    return template_path.read_text(encoding='utf-8')
+
+
+def parse_resume_sections(latex_content: str) -> Dict[str, any]:
+    """
+    Parse LaTeX resume into structured sections.
+    
+    Returns:
+        Dict containing:
+        - experience: List of dicts with job_title, company, bullets
+        - projects: List of dicts with project_name, bullets
+        - hackathons: List of dicts with project_name, description
+        - skills: str with skills line
+    """
+    result = {
+        "experience": [],
+        "projects": [],
+        "hackathons": [],
+        "skills": ""
+    }
+    
+    # Extract Professional Work Experience section
+    exp_match = re.search(
+        r'\\begin{rSection}{Professional Work Experience}(.*?)\\end{rSection}',
+        latex_content, re.DOTALL
+    )
+    if exp_match:
+        exp_content = exp_match.group(1)
+        # Find each job entry
+        job_pattern = r'\\textbf{([^}]+)}.*?\\href{[^}]+}{([^}]+)}.*?\\begin{itemize}(.*?)\\end{itemize}'
+        for job_match in re.finditer(job_pattern, exp_content, re.DOTALL):
+            bullets = re.findall(r'\\item\s+(.*?)(?=\\item|$)', job_match.group(3), re.DOTALL)
+            bullets = [b.strip() for b in bullets if b.strip()]
+            result["experience"].append({
+                "job_title": job_match.group(1).replace("\\&", "&"),
+                "company": job_match.group(2),
+                "bullets": bullets
+            })
+    
+    # Extract Projects section
+    proj_match = re.search(
+        r'\\begin{rSection}{Projects}(.*?)\\end{rSection}',
+        latex_content, re.DOTALL
+    )
+    if proj_match:
+        proj_content = proj_match.group(1)
+        # Find each project entry
+        project_pattern = r'\\item\s+\\textbf{([^}]+)}.*?\\begin{itemize}(.*?)\\end{itemize}'
+        for proj in re.finditer(project_pattern, proj_content, re.DOTALL):
+            bullets = re.findall(r'\\item\s+(.*?)(?=\\item|$)', proj.group(2), re.DOTALL)
+            bullets = [b.strip() for b in bullets if b.strip()]
+            result["projects"].append({
+                "project_name": proj.group(1),
+                "bullets": bullets
+            })
+    
+    # Extract Hackathon Projects section
+    hack_match = re.search(
+        r'\\begin{rSection}{Hackathon Projects}(.*?)\\end{rSection}',
+        latex_content, re.DOTALL
+    )
+    if hack_match:
+        hack_content = hack_match.group(1)
+        # Extract each item in the hackathon section
+        hack_items = re.findall(r'\\item\s+(.*?)(?=\\item|$)', hack_content, re.DOTALL)
+        for item in hack_items:
+            # Extract project name from \textbf{\href{...}{NAME}} or \textbf{NAME}
+            name_match = re.search(r'\\textbf{(?:\\href{[^}]+})?{?([^}]+)}?}', item)
+            if name_match:
+                project_name = name_match.group(1)
+                # Get description - everything after the first line
+                lines = item.strip().split('\n')
+                if len(lines) > 1:
+                    desc = ' '.join(lines[1:]).strip()
+                    desc = re.sub(r'\s+', ' ', desc)
+                else:
+                    desc = ""
+                result["hackathons"].append({
+                    "project_name": project_name,
+                    "description": desc
+                })
+    
+    # Extract Skills section
+    skills_match = re.search(
+        r'\\begin{rSection}{Skills}\s*(.*?)\s*\\end{rSection}',
+        latex_content, re.DOTALL
+    )
+    if skills_match:
+        result["skills"] = skills_match.group(1).strip()
+    
+    return result
+
+
+def validate_bullet_preservation(original: str, tailored: str, section_name: str) -> Tuple[bool, str]:
+    """
+    Validate that tailored bullet preserves critical elements from original.
+
+    Focus on preserving:
+    - Numbers, metrics, percentages (MUST be preserved)
+    - Company names (MUST be preserved)
+    - Core technologies (MUST be preserved)
+
+    Also validates surgical edit constraint (<25% change).
+
+    Args:
+        original: Original bullet text
+        tailored: Tailored bullet text
+        section_name: Name of section for error reporting
+
+    Returns:
+        Tuple of (is_valid, error_message)
+    """
+    # Extract all numbers (including percentages, decimals, and counts)
+    # These MUST be preserved - no changes allowed
+    number_pattern = r'\d+(?:[.,]\d+)?%?(?:\+)?'
+    original_numbers = set(re.findall(number_pattern, original))
+    tailored_numbers = set(re.findall(number_pattern, tailored))
+
+    missing_numbers = original_numbers - tailored_numbers
+    if missing_numbers:
+        return False, f"{section_name}: Missing numbers/metrics: {missing_numbers}"
+
+    # Check for company/institution names (these MUST be preserved)
+    company_keywords = ['Brandl', 'Nutrition', 'Braunschweig', 'SciBiome', 'TECHR', 'TU']
+    for keyword in company_keywords:
+        if keyword in original and keyword not in tailored:
+            return False, f"{section_name}: Missing company/institution name: {keyword}"
+
+    # Validate surgical edit constraint - changes should be minimal
+    # Calculate word-level difference
+    original_words = set(original.lower().split())
+    tailored_words = set(tailored.lower().split())
+
+    # Words that were removed (should be very few)
+    removed_words = original_words - tailored_words
+    # Filter out common words that might be rephrased
+    significant_removed = {w for w in removed_words if len(w) > 3}
+
+    # If more than 25% of original words were removed, flag it
+    if len(original_words) > 0:
+        removal_ratio = len(significant_removed) / len(original_words)
+        if removal_ratio > 0.25:
+            return False, f"{section_name}: Too many words removed ({len(significant_removed)} words, {removal_ratio:.0%}). Surgical edits should preserve >75% of original text."
+
+    return True, ""
+
+
+def calculate_edit_percentage(original: str, tailored: str) -> float:
+    """
+    Calculate the percentage of text that was changed.
+
+    Returns:
+        Float between 0 and 1 representing change percentage.
+    """
+    original_words = original.lower().split()
+    tailored_words = tailored.lower().split()
+
+    if not original_words:
+        return 1.0
+
+    # Count words that appear in both
+    original_set = set(original_words)
+    tailored_set = set(tailored_words)
+
+    preserved = len(original_set & tailored_set)
+    total_original = len(original_set)
+
+    preservation_ratio = preserved / total_original if total_original > 0 else 0
+    return 1.0 - preservation_ratio
+
+
+def extract_jd_keywords(job_description: str) -> Dict[str, List[str]]:
+    """
+    Extract technical keywords from a job description.
+
+    Returns:
+        Dict with categories: languages, frameworks, tools, cloud, databases, concepts
+    """
+    jd_lower = job_description.lower()
+
+    # Define keyword patterns
+    keyword_categories = {
+        "languages": [
+            "python", "java", "javascript", "typescript", "c++", "c#", "go", "golang",
+            "rust", "scala", "kotlin", "ruby", "php", "swift", "r", "matlab", "sql", "bash"
+        ],
+        "frameworks": [
+            "tensorflow", "pytorch", "keras", "scikit-learn", "sklearn", "fastapi", "flask",
+            "django", "react", "nextjs", "next.js", "vue", "angular", "express", "spring",
+            "langchain", "langgraph", "langsmith", "huggingface", "transformers"
+        ],
+        "libraries": [
+            "numpy", "pandas", "opencv", "pillow", "pil", "matplotlib", "seaborn",
+            "scipy", "nltk", "spacy", "beautifulsoup", "selenium", "playwright"
+        ],
+        "cloud_devops": [
+            "aws", "azure", "gcp", "google cloud", "docker", "kubernetes", "k8s",
+            "ci/cd", "jenkins", "github actions", "terraform", "ansible", "mlflow",
+            "mlops", "airflow", "prefect", "dagster"
+        ],
+        "databases": [
+            "postgresql", "postgres", "mysql", "mongodb", "redis", "elasticsearch",
+            "qdrant", "pinecone", "weaviate", "neo4j", "dynamodb", "bigquery"
+        ],
+        "ai_ml_concepts": [
+            "machine learning", "deep learning", "nlp", "natural language processing",
+            "computer vision", "llm", "large language model", "rag", "retrieval augmented",
+            "vector database", "embeddings", "fine-tuning", "prompt engineering",
+            "reinforcement learning", "time series", "forecasting", "recommendation"
+        ],
+        "soft_concepts": [
+            "production", "scalable", "distributed", "real-time", "batch processing",
+            "data pipeline", "etl", "api", "rest api", "graphql", "microservices",
+            "agile", "cross-functional", "full-stack", "end-to-end"
+        ]
+    }
+
+    found_keywords = {cat: [] for cat in keyword_categories}
+
+    for category, keywords in keyword_categories.items():
+        for keyword in keywords:
+            if keyword in jd_lower:
+                # Capitalize properly for display
+                display_keyword = keyword.title() if len(keyword) > 3 else keyword.upper()
+                if keyword == "ci/cd":
+                    display_keyword = "CI/CD"
+                elif keyword == "llm":
+                    display_keyword = "LLMs"
+                elif keyword == "nlp":
+                    display_keyword = "NLP"
+                elif keyword == "rag":
+                    display_keyword = "RAG"
+                elif keyword == "api":
+                    display_keyword = "API"
+                elif keyword == "rest api":
+                    display_keyword = "REST APIs"
+                found_keywords[category].append(display_keyword)
+
+    return found_keywords
+
+
+def map_keywords_to_projects(keywords: Dict[str, List[str]], sections: Dict) -> Dict[str, List[str]]:
+    """
+    Map extracted keywords to relevant resume sections based on project content.
+
+    CONSERVATIVE APPROACH: Only suggest keywords that are DEFINITELY TRUE.
+    - Only implicit/standard dependencies (NumPy with PyTorch)
+    - Only more specific names for existing tech (Qdrant → "vector database")
+    - NEVER suggest tech that wasn't actually used
+
+    Returns:
+        Dict mapping project/experience names to relevant keywords that can be added.
+    """
+    keyword_mapping = {}
+
+    # Flatten all keywords
+    all_keywords = []
+    for cat_keywords in keywords.values():
+        all_keywords.extend(cat_keywords)
+
+    # CONSERVATIVE keyword mappings - ONLY suggest what's definitely true
+    # Format: "hint in text" → [keywords that are IMPLICIT/DEFINITELY USED]
+    project_tech_hints = {
+        # Experience sections - CONSERVATIVE
+        "Prophet-based": ["Python", "Pandas"],  # Prophet uses Python/Pandas
+        "AWS pipeline": ["Docker"],  # ECS uses Docker containers
+        "AWS": ["Docker"],  # AWS ECS = Docker
+        "ECS": ["Docker"],  # ECS runs Docker
+        "Email Agent": ["LLMs"],  # AI agent uses LLMs
+        "n8n": ["API"],  # n8n integrations use APIs
+        "Google Gemini": ["LLMs"],  # Gemini IS an LLM
+        "FastAPI": ["API", "REST APIs"],  # FastAPI creates APIs
+        "LangGraph": ["LLMs"],  # LangGraph orchestrates LLMs
+        "Qdrant": ["Vector Database"],  # Qdrant IS a vector DB
+        "CycleGAN": ["Deep Learning", "Computer Vision"],  # CycleGAN is DL + CV
+        "TensorFlow": ["Deep Learning"],  # TensorFlow is DL framework
+        "PyTorch": ["NumPy"],  # PyTorch depends on NumPy
+        "OpenCV": ["Computer Vision"],  # OpenCV IS computer vision
+        "Real-ESRGAN": ["Computer Vision", "Deep Learning"],  # ESRGAN is DL + CV
+        "KBNet": ["Deep Learning"],  # KBNet is DL model
+
+        # Projects - CONSERVATIVE
+        "LLM-powered": ["LLMs", "NLP"],  # LLM-powered = uses LLMs
+        "discourse analysis": ["NLP"],  # Discourse analysis IS NLP
+        "tweets": ["NLP"],  # Tweet analysis = NLP
+        "multi-agent": ["LLMs"],  # Multi-agent systems use LLMs
+        "Gemini": ["LLMs"],  # Gemini IS an LLM
+        "DeepSeek": ["LLMs"],  # DeepSeek IS an LLM
+        "pose estimation": ["Computer Vision"],  # Pose estimation IS CV
+
+        # Hackathons - CONSERVATIVE
+        "YOLOv": ["Computer Vision", "Deep Learning"],  # YOLO is CV + DL
+        "research agent": ["LLMs"],  # Research agents use LLMs
+
+        # NOTE: We do NOT auto-suggest these (require explicit proof):
+        # - "RAG" (only if there's actual retrieval)
+        # - "CI/CD" (only if automated deployment)
+        # - "MLOps" (only if ML lifecycle management)
+        # - "Kubernetes" (only if K8s is used, not just Docker)
+    }
+
+    # Map keywords to each section
+    for exp in sections.get("experience", []):
+        relevant = []
+        exp_str = str(exp).lower()
+        for hint, tech_list in project_tech_hints.items():
+            if hint.lower() in exp_str:
+                for tech in tech_list:
+                    if tech in all_keywords and tech not in relevant:
+                        relevant.append(tech)
+        if relevant:
+            keyword_mapping[f"{exp.get('job_title', '')} at {exp.get('company', '')}"] = relevant
+
+    for proj in sections.get("projects", []):
+        relevant = []
+        proj_str = str(proj).lower()
+        for hint, tech_list in project_tech_hints.items():
+            if hint.lower() in proj_str:
+                for tech in tech_list:
+                    if tech in all_keywords and tech not in relevant:
+                        relevant.append(tech)
+        if relevant:
+            keyword_mapping[proj.get("project_name", "")] = relevant
+
+    for hack in sections.get("hackathons", []):
+        relevant = []
+        hack_str = str(hack).lower()
+        for hint, tech_list in project_tech_hints.items():
+            if hint.lower() in hack_str:
+                for tech in tech_list:
+                    if tech in all_keywords and tech not in relevant:
+                        relevant.append(tech)
+        if relevant:
+            keyword_mapping[hack.get("project_name", "")] = relevant
+
+    return keyword_mapping
+
+
+
+def replace_text_robust(latex_content: str, original: str, replacement: str) -> str:
+    """
+    Replace text robustly by matching words regardless of whitespace.
+    Handles LaTeX special characters and whitespace normalization.
+    """
+    if not original or not original.strip():
+        return latex_content
+
+    # Strategy 1: Direct replacement (exact match)
+    if original in latex_content:
+        return latex_content.replace(original, replacement, 1)
+
+    # Strategy 2: Word-based pattern matching (handles whitespace/newlines)
+    words = original.split()
+    if not words:
+        return latex_content
+
+    # Create pattern: escape words, join with flexible whitespace
+    pattern = r'\s+'.join(re.escape(w) for w in words)
+    new_content = re.sub(pattern, lambda m: replacement, latex_content, count=1)
+    if new_content != latex_content:
+        return new_content
+
+    # Strategy 3: Handle LaTeX escape differences
+    # The agent might send "80%" but LaTeX has "80\%"
+    # Create a pattern that matches both escaped and unescaped versions
+    def make_latex_flexible(word: str) -> str:
+        """Make a word pattern that matches LaTeX escapes flexibly."""
+        # Handle percentage
+        word = re.sub(r'(\d+)%', r'\1\\\\?%', word)
+        # Handle ampersand
+        word = word.replace('&', r'\\?&')
+        # Handle other special chars that might be escaped
+        return word
+
+    flexible_words = [make_latex_flexible(re.escape(w)) for w in words]
+    flex_pattern = r'\s+'.join(flexible_words)
+
+    try:
+        new_content = re.sub(flex_pattern, lambda m: replacement, latex_content, count=1)
+        if new_content != latex_content:
+            return new_content
+    except re.error:
+        pass  # If pattern is invalid, continue to next strategy
+
+    # Strategy 4: Find longest matching substring and replace around it
+    # This handles cases where original text is slightly different
+    # Find a unique anchor (like a specific metric or tech name)
+    for anchor in re.findall(r'\d+[%+]?|\b[A-Z][a-z]+[A-Z]\w*\b|\b(?:Prophet|Chronos|Moirai|LangGraph|FastAPI)\b', original):
+        # Find this anchor in the LaTeX content
+        anchor_escaped = re.escape(anchor).replace(r'\%', r'\\?%')
+        anchor_matches = list(re.finditer(anchor_escaped, latex_content))
+
+        for match in anchor_matches:
+            # Get context around the anchor (the full bullet)
+            start = match.start()
+            end = match.end()
+
+            # Expand to find the full item (between \item and next \item or \end)
+            line_start = latex_content.rfind('\\item', 0, start)
+            if line_start == -1:
+                continue
+            line_end = latex_content.find('\\item', end)
+            if line_end == -1:
+                line_end = latex_content.find('\\end{itemize}', end)
+            if line_end == -1:
+                line_end = len(latex_content)
+
+            bullet_text = latex_content[line_start:line_end]
+
+            # Check if this bullet contains most of our original words
+            original_word_set = set(w.lower() for w in words if len(w) > 3)
+            bullet_word_set = set(w.lower() for w in bullet_text.split() if len(w) > 3)
+
+            overlap = len(original_word_set & bullet_word_set) / len(original_word_set) if original_word_set else 0
+
+            if overlap > 0.7:  # 70% word overlap means it's likely the right bullet
+                # Replace the content after \item
+                item_content_start = line_start + len('\\item')
+                # Skip whitespace
+                while item_content_start < line_end and latex_content[item_content_start] in ' \t\n':
+                    item_content_start += 1
+
+                old_bullet_content = latex_content[item_content_start:line_end].strip()
+                new_content = latex_content[:item_content_start] + ' ' + replacement + latex_content[line_end:]
+                return new_content
+
+    # If all strategies fail, return unchanged
+    print(f"⚠️ WARNING: Could not find text to replace: {original[:50]}...")
+    return latex_content
+
+
+def generate_tailored_resume_latex(
+    original_latex: str,
+    tailored_output: TailoredResumeOutput
+) -> str:
+    """
+    Generate tailored resume LaTeX by replacing bullet points with tailored versions.
+
+    Validates that:
+    1. Critical elements are preserved (numbers, companies, technologies)
+    2. Surgical edit constraint is met (<25% text change)
+
+    Raises ValueError if validation fails.
+    """
+    latex = original_latex
+    validation_errors = []
+    edit_stats = []
+
+    # Replace and validate experience bullets
+    for exp in tailored_output.experience_sections:
+        section_name = f"{exp.job_title} at {exp.company}"
+        for i, bp in enumerate(exp.bullet_points):
+            if bp.original_text and bp.tailored_text:
+                # Validate preservation
+                is_valid, error_msg = validate_bullet_preservation(
+                    bp.original_text,
+                    bp.tailored_text,
+                    f"{section_name} (bullet {i+1})"
+                )
+                if not is_valid:
+                    validation_errors.append(error_msg)
+                else:
+                    # Track edit percentage
+                    edit_pct = calculate_edit_percentage(bp.original_text, bp.tailored_text)
+                    edit_stats.append((f"{section_name} bullet {i+1}", edit_pct))
+
+                    # Escape LaTeX special characters in tailored text
+                    escaped_tailored = escape_latex_special_chars(bp.tailored_text)
+                    # Robust replacement handling whitespace
+                    latex = replace_text_robust(latex, bp.original_text, escaped_tailored)
+
+    # Replace and validate project bullets
+    for proj in tailored_output.project_sections:
+        section_name = f"Project: {proj.project_name}"
+        for i, bp in enumerate(proj.bullet_points):
+            if bp.original_text and bp.tailored_text:
+                # Validate preservation
+                is_valid, error_msg = validate_bullet_preservation(
+                    bp.original_text,
+                    bp.tailored_text,
+                    f"{section_name} (bullet {i+1})"
+                )
+                if not is_valid:
+                    validation_errors.append(error_msg)
+                else:
+                    # Track edit percentage
+                    edit_pct = calculate_edit_percentage(bp.original_text, bp.tailored_text)
+                    edit_stats.append((f"{section_name} bullet {i+1}", edit_pct))
+
+                    # Escape LaTeX special characters in tailored text
+                    escaped_tailored = escape_latex_special_chars(bp.tailored_text)
+                    # Robust replacement handling whitespace
+                    latex = replace_text_robust(latex, bp.original_text, escaped_tailored)
+
+    # Replace and validate hackathon descriptions
+    for hack in tailored_output.hackathon_sections:
+        if hack.description.original_text and hack.description.tailored_text:
+            section_name = f"Hackathon: {hack.project_name}"
+            is_valid, error_msg = validate_bullet_preservation(
+                hack.description.original_text,
+                hack.description.tailored_text,
+                section_name
+            )
+            if not is_valid:
+                validation_errors.append(error_msg)
+            else:
+                # Track edit percentage
+                edit_pct = calculate_edit_percentage(hack.description.original_text, hack.description.tailored_text)
+                edit_stats.append((section_name, edit_pct))
+
+                # Escape LaTeX special characters in tailored text
+                escaped_tailored = escape_latex_special_chars(hack.description.tailored_text)
+                latex = replace_text_robust(latex, hack.description.original_text, escaped_tailored)
+
+    # Check for excessive edits (non-surgical)
+    excessive_edits = [(name, pct) for name, pct in edit_stats if pct > 0.30]
+    if excessive_edits:
+        for name, pct in excessive_edits:
+            validation_errors.append(
+                f"⚠️ {name}: {pct:.0%} of words changed. Surgical edits should change <25% of text."
+            )
+
+    # If there are validation errors, raise exception with details
+    if validation_errors:
+        error_summary = "\n".join(validation_errors)
+        raise ValueError(
+            f"Resume tailoring validation FAILED:\n\n{error_summary}\n\n"
+            f"SURGICAL EDIT RULES:\n"
+            f"1. Preserve ALL numbers, metrics, and company names\n"
+            f"2. Change <25% of original text (only APPEND keywords)\n"
+            f"3. DO NOT rewrite entire bullets\n\n"
+            f"Example of correct surgical edit:\n"
+            f"BEFORE: 'Built pipeline using PyTorch'\n"
+            f"AFTER:  'Built pipeline using PyTorch, OpenCV, and NumPy'\n"
+            f"(Only appended ', OpenCV, and NumPy')"
+        )
+
+    # Log edit statistics for transparency
+    if edit_stats:
+        avg_edit = sum(pct for _, pct in edit_stats) / len(edit_stats)
+        print(f"📊 Surgical Edit Stats: Average {avg_edit:.0%} text changed across {len(edit_stats)} bullets")
+
+    # Replace skills section
+    if tailored_output.skills:
+        # Escape LaTeX special characters in skills text
+        escaped_skills = escape_latex_special_chars(tailored_output.skills)
+        skills_pattern = r'(\\begin{rSection}{Skills}\s*).*?(\s*\\end{rSection})'
+        latex = re.sub(
+            skills_pattern,
+            rf'\1{escaped_skills}\2',
+            latex,
+            flags=re.DOTALL
+        )
+
+    return latex
+
+
+# ============================================================================
 # LaTeX Compilation Functions
 # ============================================================================
 
@@ -87,6 +697,12 @@ def compile_latex_to_pdf(latex_content: str, output_path: str) -> Tuple[bool, st
         # Write LaTeX content to temporary .tex file
         tex_file = temp_dir_path / "document.tex"
         tex_file.write_text(latex_content, encoding='utf-8')
+        
+        # Copy resume.cls if the document uses it
+        if r'\documentclass' in latex_content and 'resume' in latex_content[:500]:
+            resume_cls_path = Path(__file__).parent / "templates" / "resume.cls"
+            if resume_cls_path.exists():
+                shutil.copy(resume_cls_path, temp_dir_path / "resume.cls")
         
         try:
             # Compile LaTeX to PDF (run twice for references)
@@ -361,3 +977,277 @@ def edit_cover_letter_pdfs(**kwargs) -> str:
     """
     # Reuse the generate function since we're overwriting anyway
     return generate_cover_letter_pdfs(**kwargs)
+
+
+# ============================================================================
+# Resume Tailoring Functions
+# ============================================================================
+
+def create_tailored_resume_pdf(
+    tailored_output: TailoredResumeOutput,
+    company_name: str,
+    job_position: str
+) -> Tuple[bool, str]:
+    """
+    Create tailored resume PDF.
+    
+    Args:
+        tailored_output: Structured output with tailored sections
+        company_name: Target company name
+        job_position: Job position for filename
+        
+    Returns:
+        Tuple of (success: bool, file_path or error_message: str)
+    """
+    # Load original template
+    original_latex = load_resume_template()
+    
+    # Generate tailored LaTeX
+    tailored_latex = generate_tailored_resume_latex(original_latex, tailored_output)
+    
+    # Get output directory
+    output_dir = get_output_directory(company_name, job_position)
+    
+    # Generate filename
+    filename = f"{config.NAME_FOR_FILES}_resume_{config.CURRENT_YEAR}.pdf"
+    output_path = output_dir / filename
+    
+    # Also save the .tex file for reference
+    tex_filename = f"{config.NAME_FOR_FILES}_resume_{config.CURRENT_YEAR}.tex"
+    tex_path = output_dir / tex_filename
+    tex_path.write_text(tailored_latex, encoding='utf-8')
+    
+    # Compile to PDF
+    success, message = compile_latex_to_pdf(tailored_latex, str(output_path))
+    
+    if success:
+        return True, str(output_path)
+    else:
+        return False, message
+
+
+@tool("tailor-resume-for-ats", args_schema=ResumeInput, return_direct=False)
+def tailor_resume_for_ats(**kwargs) -> str:
+    """
+    Tailor resume for a specific job description to optimize ATS score.
+
+    This tool analyzes the job description, extracts keywords, and returns
+    the current resume content with SURGICAL EDIT instructions.
+
+    SURGICAL EDITS = Keep 75%+ of original text, only ADD relevant keywords.
+
+    After editing, use the generate-tailored-resume-pdf tool to create the PDF.
+
+    Returns:
+        Current resume sections with keyword mapping for surgical edits.
+    """
+    data = ResumeInput(**kwargs)
+
+    # Load and parse current resume
+    try:
+        latex_content = load_resume_template()
+        sections = parse_resume_sections(latex_content)
+    except Exception as e:
+        return f"Error loading resume template: {str(e)}"
+
+    # Extract keywords from JD
+    jd_keywords = extract_jd_keywords(data.job_description)
+
+    # Map keywords to projects
+    keyword_mapping = map_keywords_to_projects(jd_keywords, sections)
+
+    # Format output for the agent
+    output_parts = []
+    output_parts.append("=" * 70)
+    output_parts.append("RESUME TAILORING TASK - SURGICAL KEYWORD INJECTION")
+    output_parts.append("=" * 70)
+    output_parts.append(f"\nTarget Company: {data.company_name}")
+    output_parts.append(f"Target Position: {data.job_position}")
+
+    # Show extracted keywords
+    output_parts.append(f"\n{'=' * 70}")
+    output_parts.append("EXTRACTED JD KEYWORDS (Add these to Skills + relevant bullets)")
+    output_parts.append("=" * 70)
+
+    for category, keywords in jd_keywords.items():
+        if keywords:
+            output_parts.append(f"\n{category.upper()}: {', '.join(keywords)}")
+
+    # Flatten for skills section
+    all_keywords = []
+    for kw_list in jd_keywords.values():
+        all_keywords.extend(kw_list)
+    output_parts.append(f"\n\n🎯 ALL JD KEYWORDS FOR SKILLS SECTION:\n{', '.join(all_keywords)}")
+
+    # Show keyword-to-project mapping
+    output_parts.append(f"\n{'=' * 70}")
+    output_parts.append("KEYWORD-TO-PROJECT MAPPING (Which keywords to add where)")
+    output_parts.append("=" * 70)
+
+    if keyword_mapping:
+        for project, keywords in keyword_mapping.items():
+            output_parts.append(f"\n📌 {project}")
+            output_parts.append(f"   Add: {', '.join(keywords)}")
+    else:
+        output_parts.append("\nNo automatic mapping found. Use judgment to add relevant keywords.")
+
+    output_parts.append(f"\n{'=' * 70}")
+    output_parts.append("JOB DESCRIPTION (Reference)")
+    output_parts.append("=" * 70)
+    output_parts.append(data.job_description[:2000] + "..." if len(data.job_description) > 2000 else data.job_description)
+
+    output_parts.append(f"\n{'=' * 70}")
+    output_parts.append("CURRENT RESUME SECTIONS - MAKE SURGICAL EDITS ONLY")
+    output_parts.append("=" * 70)
+
+    # Professional Experience with surgical edit hints
+    output_parts.append("\n" + "-" * 50)
+    output_parts.append("PROFESSIONAL EXPERIENCE")
+    output_parts.append("-" * 50)
+    for i, exp in enumerate(sections["experience"], 1):
+        section_key = f"{exp['job_title']} at {exp['company']}"
+        suggested_keywords = keyword_mapping.get(section_key, [])
+
+        output_parts.append(f"\n[Experience {i}] {exp['job_title']} at {exp['company']}")
+        if suggested_keywords:
+            output_parts.append(f"   💡 Suggested keywords to ADD: {', '.join(suggested_keywords)}")
+
+        for j, bullet in enumerate(exp["bullets"], 1):
+            output_parts.append(f"\n  ORIGINAL Bullet {j}:")
+            output_parts.append(f"  {bullet}")
+            output_parts.append(f"  ↳ SURGICAL EDIT: Append 3-6 relevant keywords (e.g., ', using X, Y, and Z'); do not remove details")
+
+    # Projects
+    output_parts.append("\n" + "-" * 50)
+    output_parts.append("PROJECTS")
+    output_parts.append("-" * 50)
+    for i, proj in enumerate(sections["projects"], 1):
+        section_key = proj['project_name']
+        suggested_keywords = keyword_mapping.get(section_key, [])
+
+        output_parts.append(f"\n[Project {i}] {proj['project_name']}")
+        if suggested_keywords:
+            output_parts.append(f"   💡 Suggested keywords to ADD: {', '.join(suggested_keywords)}")
+
+        for j, bullet in enumerate(proj["bullets"], 1):
+            output_parts.append(f"\n  ORIGINAL Bullet {j}:")
+            output_parts.append(f"  {bullet}")
+            output_parts.append(f"  ↳ SURGICAL EDIT: Append 3-6 relevant keywords; do not remove details")
+
+    # Hackathons
+    output_parts.append("\n" + "-" * 50)
+    output_parts.append("HACKATHON PROJECTS")
+    output_parts.append("-" * 50)
+    for i, hack in enumerate(sections["hackathons"], 1):
+        section_key = hack['project_name']
+        suggested_keywords = keyword_mapping.get(section_key, [])
+
+        output_parts.append(f"\n[Hackathon {i}] {hack['project_name']}")
+        if suggested_keywords:
+            output_parts.append(f"   💡 Suggested keywords to ADD: {', '.join(suggested_keywords)}")
+        output_parts.append(f"\n  ORIGINAL Description:")
+        output_parts.append(f"  {hack['description']}")
+        output_parts.append(f"  ↳ SURGICAL EDIT: Append 3-6 relevant keywords; do not remove details")
+
+    # Skills
+    output_parts.append("\n" + "-" * 50)
+    output_parts.append("SKILLS SECTION (REWRITE COMPLETELY)")
+    output_parts.append("-" * 50)
+    output_parts.append(f"\nCURRENT: {sections['skills']}")
+    output_parts.append(f"\n🎯 NEW SKILLS should include ALL these JD keywords FIRST:")
+    output_parts.append(f"{', '.join(all_keywords)}")
+    output_parts.append("\nThen add relevant existing skills.")
+
+    output_parts.append(f"\n{'=' * 70}")
+    output_parts.append("⚠️ SURGICAL EDIT RULES - FOLLOW EXACTLY")
+    output_parts.append("=" * 70)
+    output_parts.append("""
+1. SKILLS SECTION: Rewrite completely with ALL JD keywords first
+
+2. BULLET POINTS: SURGICAL EDITS ONLY
+   ✅ DO: Add keywords at the end: "original text, using X, Y, and Z"
+   ✅ DO: Expand tech lists: "(X, Y)" → "(X, Y, Z)"
+   ❌ DON'T: Rewrite entire bullet structure
+   ❌ DON'T: Remove any original technologies
+   ❌ DON'T: Change any numbers/metrics
+
+3. PRESERVATION RULE: 75%+ of original text must remain unchanged (no detail loss)
+
+4. BANNED PHRASES (Never use):
+   - "deployment optimization"
+   - "methodologies"
+   - "demonstrated familiarity with"
+   - "showcasing abilities in"
+
+⚠️ TRUTHFULNESS IS NON-NEGOTIABLE:
+   ❌ NEVER add "RAG" unless there's actual retrieval from a knowledge base
+   ❌ NEVER add "LLMs" to projects that don't use language models
+   ❌ NEVER add "CI/CD" unless there's automated deployment
+   ❌ NEVER add technologies you didn't actually use
+
+   ✅ SAFE TO ADD (implicit dependencies):
+   - PyTorch → "NumPy" (standard dependency)
+   - OpenCV → "Computer Vision" (that's what it is)
+   - Qdrant → "vector database" (Qdrant IS a vector DB)
+   - LangGraph/Gemini → "LLMs" (they use LLMs)
+   - FastAPI → "REST APIs" (FastAPI creates REST APIs)
+
+EXAMPLE SURGICAL EDIT:
+BEFORE: "Built pipeline using PyTorch for image enhancement"
+AFTER:  "Built pipeline using PyTorch, OpenCV, and NumPy for image enhancement"
+(Only added ", OpenCV, and NumPy" - rest is identical)
+
+Now call generate-tailored-resume-pdf with surgically edited bullets.
+""")
+
+    return "\n".join(output_parts)
+
+
+class TailoredResumeInput(BaseModel):
+    """Input for generating tailored resume PDF"""
+    company_name: str = Field(description="Target company name")
+    job_position: str = Field(description="Job position being applied for")
+    experience_sections: List[ResumeExperienceSection] = Field(
+        description="Tailored professional experience sections"
+    )
+    project_sections: List[ResumeProjectSection] = Field(
+        description="Tailored project sections"
+    )
+    hackathon_sections: List[ResumeHackathonSection] = Field(
+        description="Tailored hackathon project sections"
+    )
+    skills: str = Field(description="Updated skills line")
+
+
+@tool("generate-tailored-resume-pdf", args_schema=TailoredResumeInput, return_direct=False)
+def generate_tailored_resume_pdf(**kwargs) -> str:
+    """
+    Generate a tailored resume PDF with ATS-optimized content.
+    
+    This tool takes the rewritten resume sections and generates a PDF.
+    Use this after tailor-resume-for-ats and rewriting the content.
+    
+    Returns:
+        Success message with file path or error message.
+    """
+    data = TailoredResumeInput(**kwargs)
+    
+    # Convert to TailoredResumeOutput
+    tailored_output = TailoredResumeOutput(
+        experience_sections=data.experience_sections,
+        project_sections=data.project_sections,
+        hackathon_sections=data.hackathon_sections,
+        skills=data.skills
+    )
+    
+    # Generate PDF
+    success, path_or_error = create_tailored_resume_pdf(
+        tailored_output,
+        data.company_name,
+        data.job_position
+    )
+    
+    if success:
+        return f"✓ Tailored resume generated: {path_or_error}"
+    else:
+        return f"✗ Resume generation failed: {path_or_error}"

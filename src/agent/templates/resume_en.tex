@@ -1,0 +1,135 @@
+\documentclass[11pt]{resume}
+\usepackage[utf8]{inputenc}
+\usepackage[left=0.4 in,top=0.4in,right=0.4 in,bottom=0.4in]{geometry}
+\usepackage{eurosym}
+\usepackage{array}
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+% --- Font setup: Helvetica-like ---
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\newcommand{\tab}[1]{\hspace{.2667\textwidth}\rlap{#1}}
+\newcommand{\itab}[1]{\hspace{0em}\rlap{#1}}
+\name{Aditya Ghanashyam Ladawa}
+\address{+49 15510 030840 | Braunschweig, Germany | \href{mailto:adityaladawa12@gmail.com}{Gmail} | \href{https://www.linkedin.com/in/aditya-ladawa}{LinkedIn} | \href{https://github.com/aditya-ladawa}{GitHub}}
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+% EDUCATION
+%----------------------------------------------------------------------------------------
+\begin{rSection}{Education}
+{\bf M.Sc. Data Science}, \href{https://www.tu-braunschweig.de/}{Technische Universit\"at Braunschweig} \hfill {Oct 2024 -- Present}\\
+
+{\bf B.E Artificial Intelligence and Data Science}, \href{https://moderncoe.edu.in/}{PES Modern College of Engineering} \hfill {Jan 2021 -- Jun 2024}\\
+GPA: 8.98/10 | Thesis: Published in IJCSE (Vol. 12, Issue 8)
+\end{rSection}
+
+%----------------------------------------------------------------------------------------
+% Professional Work Experience
+%----------------------------------------------------------------------------------------
+\begin{rSection}{Professional Work Experience}
+\textbf{AI \& Processes Engineer} \hfill Aug 2025 -- Present\\
+\href{https://brandl-nutrition.de/}{Brandl Nutrition} \hfill \textit{Braunschweig, Germany}
+\begin{itemize}
+  \item Eliminated stock-outs across 60+ products by deploying a Prophet-based demand forecasting system in production, achieving an 80\% improvement in purchase decision quality, using Python and EOQ-driven inventory optimization; with forecasts benchmarked against Chronos-2 and Moirai models across 55 SKUs.
+  \item Automated inventory planning from weekly manual updates to daily runs by deploying AWS pipeline (ECS, ECR, EventBridge, CloudWatch) processing 111,000 records with Looker Studio dashboards at \euro{}3/month, maintaining 99\%+ uptime over 4 months
+  \item Saved team 2+ hours daily on customer support by building multi-modal AI Email Agent in n8n, with DHL, and Shopify integrations; handling 10+ customer support scenarios; 70\% of responses require minor or no edits across 12-20 daily tickets
+\end{itemize}
+
+\textbf{Research Assistant} \hfill May 2025 -- Sep 2025\\
+\href{https://scibiome.tu-bs.de/}{TU Braunschweig -- SciBiome (Data Science in Bio-Medicine)} \hfill \textit{Braunschweig, Germany}
+\begin{itemize}
+  \item Reduced literature screening from days to 90 seconds for 2,500 papers by building async system with Google Gemini and FastAPI processing 100-paper batches via 12 parallel API calls at 95\% success rate
+  \item Developed full-stack web application (NextJS, FastAPI, IBM Docling) enabling scientists to screen papers and extract tables, figures, and metrics from PDFs; generates image-aware structured reports with methodology details and experimental results
+  \item Building deep research agent with LangGraph, LightRAG (knowledge graphs with Neo4j, Qdrant Vector DB) using Context Engineering principles deep biomedical research synthesis
+\end{itemize}
+
+\textbf{AI/ML Engineer Intern} \hfill Jun 2023 -- Mar 2024\\
+\href{https://techr.co.in/}{TECHR -- AI/ML Solutions} \hfill \textit{Pune, India}
+\begin{itemize}
+  \item Developed CycleGAN model in TensorFlow 2 for harmonizing 1.5T-to-3T Brain MRI scans
+  \item Built general-purpose image enhancement pipeline combining KBNets denoising with Real-ESRGAN 4K upscaling using PyTorch and OpenCV
+\end{itemize}
+\end{rSection}
+
+%----------------------------------------------------------------------------------------
+% PROJECTS
+%----------------------------------------------------------------------------------------
+\begin{rSection}{Projects}
+\vspace{-1.0em}
+\item \textbf{Ideological Polarization in the 2024 U.S. Election} {\href{https://drive.google.com/drive/folders/1E-KFOLOurF_BMpMjMF8zm3hy4TDkqhZf?usp=sharing}{Open Report}} \hfill Jul 2025 - Sep 2025
+\begin{itemize}
+  \item Exposed ideological divergence and echo chambers by engineering an LLM-powered multi-layered discourse analysis system that extracted semantic triples and stance annotations from 7,500 tweets, constructing knowledge graphs and bipartite stance networks across 36 temporal windows revealing divergent conceptual framing of identical terms
+  \item Quantified polarization dynamics and identified discourse amplifiers by analyzing reply network structures, calculating normalized engagement metrics across 50,000 tweets, and tracking stance drift patterns; revealed broadcasting hubs and attitudinal shifts over time
+\end{itemize}
+
+\vspace{0.5em}
+\item \textbf{AI-Driven Reels Pipeline} {\href{https://github.com/aditya-ladawa/infra_peter}{GitHub} \; \href{https://www.instagram.com/infra.peter/}{@infra.peter}} \hfill Jun 2025 -- Aug 2025
+\begin{itemize}
+  \item Grew Instagram channel to 17,000 followers and 1M views in 3 months by fully automating video production from topic to published reel; reduced creation time from 6 hours to 20 minutes at \euro{}0.20/video
+  \item Produced 100 videos (86 posted) using LangGraph multi-agent system with Gemini, DeepSeek and Tavily AI search to research topics from 10+ sources, writes scripts, generates voiceovers, and assembles final videos; received 12+ partnership and 2 channel acquisition offers
+\end{itemize}
+
+\vspace{0.5em}
+\item \textbf{AI -- ReAs (Research Assistant)} {\href{https://github.com/aditya-ladawa/ai-reas}{GitHub}} \hfill Oct 2024 -- Feb 2025
+\begin{itemize}
+  \item Built \href{https://arxiv.org/abs/2305.18323}{ReWOO-style multi-agent system} with LangGraph, LangChain, and Qdrant enabling automated research through web search, sandboxed code execution, and cross-thread PostgreSQL memory
+  \item Achieved 5x reduction in API costs and 30\% faster insight generation while improving multi-step reasoning accuracy by 4\% compared to single-agent baselines
+\end{itemize}
+
+\vspace{0.5em}
+\item \textbf{Workout Monitoring Robot} {\href{https://github.com/aditya-ladawa/Workout_monitoring_robot}{GitHub}} \hfill Dec 2023 -- Apr 2024
+\begin{itemize}
+  \item Built autonomous exercise coaching robot using Raspberry Pi 5, Arduino, and OpenCV pose estimation running at 10 FPS with 100ms feedback latency; reduced workout form errors by 30\% and increased user retention by 40\%
+  \item Published research paper demonstrating hardware-software integration for real-time CV, NLP, and ML feedback system
+\end{itemize}
+\end{rSection}
+%----------------------------------------------------------------------------------------
+% HACKATHONS
+%----------------------------------------------------------------------------------------
+\begin{rSection}{Hackathon Projects}
+\begin{itemize}
+    \item \textbf{\href{https://aditya-ladawa.github.io/Hera_hack_deep_explainer/}{SynthMotion}} (Hera Hackathon Berlin) \; \href{https://github.com/aditya-ladawa/Hera_hack_deep_explainer}{GitHub} \hfill Dec 2025
+    
+    Transformed complex educational content (research papers, physics problems, theoretical concepts) into professional motion graphics videos by building 6-stage autonomous pipeline with deep research agent, scripting, TTS, and video assembly using LangGraph, Gemini, Hera API, and ElevenLabs; reduced production time from 4-8 hours to 10-20 minutes
+
+    \item \textbf{Brand Presence Detection} (KI Sports Hackathon) \; \href{https://github.com/aditya-ladawa/brand_presence_prediction}{GitHub} \hfill Nov 2025
+    
+    Automated sponsorship ROI measurement for Bundesliga broadcasts by fine-tuning YOLOv11-Large on custom 71-class logo dataset; achieved 96\% precision at 17-21 FPS real-time inference (RTX 4060), tracking brand exposure duration, frequency, and screen position across live match footage
+\end{itemize}
+\end{rSection}
+
+%----------------------------------------------------------------------------------------
+% PUBLICATIONS
+%----------------------------------------------------------------------------------------
+\begin{rSection}{Publications}
+\begin{itemize}
+  \item \textbf{Workout Monitoring Robot: A Robotic Approach for Real-Time Workout Monitoring}
+  
+  Shreyas Walke, Yash Wadekar, \textbf{Aditya Ladawa}, Pratik Khopade, Shraddha V. Pandit, “Workout Monitoring Robot: A Robotic Approach for Real-Time Workout Monitoring and Guidance,” International Journal of Computer Sciences and Engineering, Vol.12, Issue.8, pp.1-9, 2024.
+  
+  \href{https://doi.org/10.26438/ijcse/v12i8.19}{DOI: 10.26438/ijcse/v12i8.19} \; 
+\end{itemize}
+\end{rSection}
+
+%----------------------------------------------------------------------------------------
+% LANGUAGES
+%----------------------------------------------------------------------------------------
+\begin{rSection}{Languages}
+English (IELTS -- Advanced) \hspace{2em} German (Goethe -- Good)
+\end{rSection}
+
+
+%----------------------------------------------------------------------------------------
+% SKILLS
+%----------------------------------------------------------------------------------------
+\begin{rSection}{Skills}
+Python, JavaScript, Bash, SQL, FastAPI, LangChain, LangGraph, LangSmith, HuggingFace, TensorFlow, PyTorch, Scikit-learn, Time Series, Transformers, Artificial Intelligence, RAG, LLMs, OpenCV, PIL, OCR, PostgreSQL, MongoDB, Redis, Qdrant, Neo4j, AWS, Docker, GitHub, Vertex AI, OpenAI, Claude, Google Gemini, CI/CD, n8n, Selenium, Playwright, BeautifulSoup
+\end{rSection}
+
+
+\end{document}

@@ -1,0 +1,52 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[left=0.5in,top=0.5in,right=0.5in,bottom=0.5in]{geometry}
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\usepackage[sfdefault]{carlito} % Calibri-like font
+\usepackage[ngerman]{babel} % German language support
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue]{hyperref}
+\pagestyle{empty}
+
+\begin{document}
+
+% Header with contact information
+\begin{center}
+{\Large\textbf{{{FULL_NAME}}}}\\[0.15cm]
+{{LOCATION}} | {{PHONE}}\\[0.05cm]
+\href{mailto:{{EMAIL}}}{{{EMAIL}}} | \href{{{LINKEDIN_URL}}}{LinkedIn} | \href{{{GITHUB_URL}}}{GitHub}\\[0.25cm]
+\end{center}
+
+% Date (German format)
+{{DATE}}\\[0.2cm]
+
+% Company information (if available)
+{{COMPANY_NAME}}\\
+{{COMPANY_ADDRESS}}\\[0.2cm]
+
+% Subject line
+\textbf{Betreff: {{SUBJECT}}}\\[0.2cm]
+
+% Salutation
+{{SALUTATION}}\\[0.2cm]
+
+% Introduction paragraph
+{{INTRO_PARAGRAPH}}\\[0.2cm]
+
+% Bullet points showcasing relevant experience and skills
+\begin{itemize}
+\setlength{\itemsep}{0.1cm}
+{{BULLET_SECTIONS}}
+\end{itemize}
+
+\vspace{0.2cm}
+
+% Closing paragraph
+{{CLOSING_PARAGRAPH}}\\[0.2cm]
+
+% Sign-off (German)
+Mit freundlichen Grüßen,\\[0.3cm]
+{{FULL_NAME}}
+
+\end{document}
